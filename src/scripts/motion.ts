@@ -1,6 +1,21 @@
-// The only client JS: one-shot scroll reveal + a relay fallback where scroll-driven animation is unsupported.
+// The only client JS: slowed smooth scroll, one-shot scroll reveal + a relay fallback where scroll-driven animation is unsupported.
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
+
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Slower, eased wheel scroll. lerp/wheelMultiplier are the speed knobs (Lenis defaults: 0.1 / 1).
+// Anchor offset = sticky header height (matches scroll-padding-top in global.css).
+if (!reduce) new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } });
+
+// Keep the footer's --bleed (Footer.astro) below the visible end so phone Safari draws it under its bar.
+const bleed = () => parseFloat(getComputedStyle(root).getPropertyValue('--bleed')) || 0;
+const pinEnd = () => {
+  const max = root.scrollHeight - innerHeight - bleed();
+  if (bleed() && scrollY > max) scrollTo(0, max);
+};
+for (const e of ['scroll', 'resize']) addEventListener(e, pinEnd, { passive: true });
 
 const io = new IntersectionObserver(
   (entries) => {

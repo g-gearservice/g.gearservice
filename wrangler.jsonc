@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gdotgear",
+  "compatibility_date": "2026-10-08",
+  "assets": { "directory": "./dist" },
+  "routes": [{ "pattern": "gdotgear.services/*", "zone_name": "gdotgear.services" }]
+}

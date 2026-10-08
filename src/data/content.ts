@@ -103,9 +103,14 @@ export const contact = {
   eyebrow: 'contact',
   title: 'let’s cross paths.',
   body: 'Collaboration, interviews, hiring, feedback. An idea, a question, or a problem worth solving: bring it.',
-  primary: '[hello@domain]',
-  secondary: ['[instagram]', '[github]'],
-  note: 'Links are coming soon.',
+  primary: {
+    label: 'g@gearservicevanguard.com',
+    href: 'mailto:g@gearservicevanguard.com',
+  },
+  secondary: [
+    { label: '[instagram]', href: null },
+    { label: '[github]', href: 'https://github.com/g-gearservice' },
+  ] as { label: string; href: string | null }[],
 };
 
 export const footer = {

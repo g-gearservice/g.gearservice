@@ -2,7 +2,7 @@
 @import './motion.css';
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 72px; /* sticky header height */ }
 body { margin: 0; background: var(--bg); color: var(--fg); }
 
 .page {
