@@ -25,7 +25,7 @@ import { footer } from '../data/content';
   nav { display: flex; flex-wrap: wrap; gap: 0 22px; }
   nav a, .ph { color: var(--soft); text-decoration: none; padding-block: 12px; }
   .crop { overflow: hidden; margin-top: clamp(24px, 4vw, 56px); }
-  .crop :global(.end) { display: block; width: 96vw; height: auto; margin: 0 auto calc(-22vw + var(--bleed, 0px)); }
+  .crop :global(.end) { display: block; width: 96vw; height: auto; margin: 0 auto min(0px, calc(-22vw + var(--bleed, 0px))); } /* min: on narrow phones (22vw < bleed) the doc still ends on the arcs, never past their tips */
   /* Phone Safari only paints real page content under its floating bar when more document lies below.
      So the crop gets --bleed more of the mark, and motion.ts stops scrolling --bleed short of the end. */
   @media (pointer: coarse) and (display-mode: browser) { :global(:root) { --bleed: 120px; } }

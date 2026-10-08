@@ -15,6 +15,9 @@ import { nav } from '../data/content';
 <style>
   /* sticky at top:0 = fixed for a first-child header, but keeps its flow height (Hero sizes against it) */
   header { position: sticky; top: 0; z-index: 10; }
+  /* iOS 26 Safari won't paint page layers under the status bar, but tints it from a sticky edge's solid color:
+     this ground-color strip makes it fill with --bg, i.e. what the full 32px blur fades to */
+  header::before { content: ''; position: absolute; inset: 0 0 auto; height: 12px; background: var(--bg); }
   .bar { position: relative; }
   /* progressive blur (OuterVale): blur doubles per layer, each masked to a band of the fade */
   .blur { position: absolute; inset: 0 0 -32px; pointer-events: none; }

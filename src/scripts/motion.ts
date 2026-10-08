@@ -5,17 +5,32 @@ import 'lenis/dist/lenis.css';
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Slower, eased wheel scroll. lerp/wheelMultiplier are the speed knobs (Lenis defaults: 0.1 / 1).
-// Anchor offset = sticky header height (matches scroll-padding-top in global.css).
-if (!reduce) new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } });
-
 // Keep the footer's --bleed (Footer.astro) below the visible end so phone Safari draws it under its bar.
 const bleed = () => parseFloat(getComputedStyle(root).getPropertyValue('--bleed')) || 0;
-const pinEnd = () => {
-  const max = root.scrollHeight - innerHeight - bleed();
-  if (bleed() && scrollY > max) scrollTo(0, max);
-};
-for (const e of ['scroll', 'resize']) addEventListener(e, pinEnd, { passive: true });
+const max = () => root.scrollHeight - innerHeight - bleed();
+
+// Slower, eased scroll for wheel AND touch. lerp/*Multiplier are the speed knobs (Lenis defaults: 0.1 / 1).
+// Anchor offset = sticky header height (matches scroll-padding-top in global.css).
+if (!reduce) {
+  const lenis = new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, syncTouch: true, touchMultiplier: 0.7, anchors: { offset: -72 } });
+  // Lenis clamps every target (drag + its own inertia) to limit: a hard stop at the bleed, never a bounce past it.
+  Object.defineProperty(lenis, 'limit', { get: () => Math.max(0, max()) });
+} else {
+  // Native scroll: block drags past the end, kill momentum that coasts into the bleed (overflow toggle stops iOS momentum).
+  let y0 = 0;
+  addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => {
+    const y = e.touches[0].clientY;
+    if (bleed() && y < y0 && scrollY >= max() - 1) e.preventDefault();
+    y0 = y;
+  }, { passive: false });
+  addEventListener('scroll', () => {
+    if (!bleed() || scrollY <= max()) return;
+    root.style.overflow = 'hidden';
+    scrollTo(0, max());
+    requestAnimationFrame(() => { root.style.overflow = ''; });
+  }, { passive: true });
+}
 
 const io = new IntersectionObserver(
   (entries) => {
