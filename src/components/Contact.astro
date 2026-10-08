@@ -1,0 +1,29 @@
+---
+import Glyph from './Glyph.astro';
+import Eyebrow from './Eyebrow.astro';
+import { contact } from '../data/content';
+---
+<section id="contact" data-section="contact" class="contact">
+  <div class="wrap in">
+    <div class="ask">
+      <Eyebrow>{contact.eyebrow}</Eyebrow>
+      <h2 class="h2" data-reveal="display">{contact.title}</h2>
+      <p class="lede" data-reveal>{contact.body}</p>
+      <div class="actions" data-reveal>
+        <span class="btn btn--solid"><Glyph stroke="var(--on-accent)" />{contact.primary}</span>
+        {contact.secondary.map((s) => <span class="btn btn--line">{s}</span>)}
+      </div>
+      <span class="label">{contact.note}</span>
+    </div>
+  </div>
+</section>
+<style>
+  .contact { border-top: 1px solid var(--line); overflow: hidden; }
+  .in { padding-block: clamp(96px, 12vw, 180px) clamp(56px, 7vw, 104px); display: flex; flex-direction: column; }
+  .ask { display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; }
+  .lede { max-width: 520px; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; text-decoration: none; cursor: default; border-radius: 999px; font-size: 17px; font-weight: 500; }
+  .btn--solid { gap: 12px; padding: 17px 30px; background: var(--accent); color: var(--on-accent); }
+  .btn--line { padding: 16px 29px; border: 1px solid var(--fg); color: var(--fg); }
+</style>

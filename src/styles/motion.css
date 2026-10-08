@@ -1,0 +1,94 @@
+/* Motion. transform / opacity / clip-path only. Every hidden start state is gated by `.js`
+   (added in <head>), so the page is complete without JS. Hooks are documented in notes/MOTION-WORKER.md. */
+:root { --lit-dim: 0.16; --reveal-y: 16px; }
+
+html { scroll-behavior: auto; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* ---- Hero: per-letter rise + fade, 40ms stagger ---- */
+[data-section=hero] [data-letter] {
+  transform-box: fill-box; /* % in translate = the glyph's own height */
+  animation: letter-in 700ms var(--ease-out) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+[data-section=hero] [data-hero-logo] [data-mark-lit] { animation: fade-in 700ms var(--ease-out) 240ms both; }
+[data-hero-chrome] { animation: fade-in 300ms var(--ease-out) 160ms both; }
+@keyframes letter-in { from { opacity: 0; transform: translateY(14%); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.no-intro [data-letter], .no-intro [data-hero-logo] [data-mark-lit], .no-intro [data-hero-chrome] { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  [data-section=hero] [data-letter], [data-section=hero] [data-hero-logo] [data-mark-lit], [data-hero-chrome] {
+    animation: fade-in 200ms ease both; animation-delay: 0s;
+  }
+}
+
+/* ---- SIGNATURE: anatomy mark lights part by part, scrubbed by scroll (cumulative, reversible) ----
+   Base (no support / no JS / reduced motion): whole mark lit, overlays at opacity 0 (set by Mark). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-stage] { view-timeline: --stage block; }
+    [data-stage] [data-mark-lit] { opacity: var(--lit-dim); }
+    [data-stage] [data-mark-part] { animation: part-on linear both; animation-timeline: --stage; }
+    [data-stage] [data-leader], [data-stage] [data-label] { opacity: .5; animation: label-on linear both; animation-timeline: --stage; }
+    [data-mark-part=L], [data-leader=L], [data-label=L] { animation-range: cover 10% cover 26%; }
+    [data-mark-part=C], [data-leader=C], [data-label=C] { animation-range: cover 30% cover 46%; }
+    [data-mark-part=R], [data-leader=R], [data-label=R] { animation-range: cover 50% cover 66%; }
+    @keyframes part-on { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes label-on { from { opacity: .5; } to { opacity: 1; } }
+  }
+}
+/* fallback relay (motion.ts adds .relay and drives opacity with WAAPI) */
+.relay [data-mark-lit] { opacity: var(--lit-dim); }
+
+/* ---- Scroll reveal (one-shot; motion.ts adds .is-in) ---- */
+.js [data-reveal]:not([data-reveal=part], [data-reveal=rise], [data-reveal=arc]), .js [data-reveal-item] {
+  opacity: 0; transform: translateY(var(--reveal-y));
+}
+.js [data-reveal=display] { --reveal-y: 24px; }
+.js [data-reveal].is-in, .js [data-reveal-item].is-in {
+  opacity: 1; transform: none;
+  transition: opacity 600ms var(--ease-out) calc(var(--i, 0) * 60ms), transform 600ms var(--ease-out) calc(var(--i, 0) * 60ms);
+}
+
+/* team marks: the part enters from the side it lives on */
+.js [data-reveal=part][data-from=left]   { clip-path: inset(0 100% 0 0); }
+.js [data-reveal=part][data-from=right]  { clip-path: inset(0 0 0 100%); }
+.js [data-reveal=part][data-from=center] { clip-path: inset(0 50% 0 50%); }
+.js [data-reveal=part].is-in { clip-path: inset(0); transition: clip-path 700ms var(--ease-out); }
+
+/* footer mark rises from the baseline */
+.js [data-reveal=rise] { clip-path: inset(100% 0 0 0); }
+.js [data-reveal=rise].is-in { clip-path: inset(0); transition: clip-path 800ms var(--ease-out); }
+
+/* statement arcs converge on the headline */
+.js [data-reveal=arc] { opacity: 0; transform: translateX(var(--dx)); }
+.js [data-reveal=arc].is-in { opacity: 1; transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .js [data-reveal=arc] { opacity: 1; transform: none; transition: none; animation: arc-in linear both; animation-timeline: view(); animation-range: entry 0% entry 100%; }
+    @keyframes arc-in { from { opacity: 0; transform: translateX(var(--dx)); } to { opacity: 1; transform: none; } }
+  }
+}
+
+/* process rules + eyebrow rules draw left to right with their row */
+.js [data-reveal-item] .rule { transform: scaleX(0); }
+.js [data-reveal-item].is-in .rule { transform: none; transition: transform 600ms var(--ease-out) calc(var(--i, 0) * 60ms + 120ms); }
+.js .eyebrow[data-reveal] .eyebrow__rule { transform: scaleX(0); }
+.js .eyebrow[data-reveal].is-in .eyebrow__rule { transform: none; transition: transform 600ms var(--ease-out) calc(var(--i, 0) * 60ms + 120ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal], .js [data-reveal-item] { transform: none !important; clip-path: none !important; animation: none !important; }
+  .js [data-reveal], .js [data-reveal-item] { opacity: 0; }
+  .js [data-reveal].is-in, .js [data-reveal-item].is-in { opacity: 1; transition: opacity 200ms ease; }
+  .js .rule, .js .eyebrow__rule { transform: none !important; }
+}
+
+/* ---- Links + press ---- */
+:where(.page a, footer a) { transition: opacity 150ms ease; }
+.cta { transition: opacity 150ms ease, transform 160ms var(--ease-out); }
+.cta:active { transform: scale(.97); transition-duration: 150ms, 100ms; } /* respond on press, not release */
+@media (hover: hover) and (pointer: fine) {
+  header nav a:not(.cta):hover, footer nav a:hover, [data-section=work] a:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .cta:hover { opacity: .85; }
+}
+@media (prefers-reduced-motion: reduce) { .cta:active { transform: none; opacity: .85; } }

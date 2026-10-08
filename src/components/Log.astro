@@ -1,0 +1,45 @@
+---
+import Mark from './Mark.astro';
+import Eyebrow from './Eyebrow.astro';
+import Status from './Status.astro';
+import { log } from '../data/content';
+---
+<section id="log" data-section="log" class="log">
+  <div class="wrap in">
+    <div class="head">
+      <Eyebrow>{log.eyebrow}</Eyebrow>
+      <h2 class="h2" data-reveal="display">{log.title}</h2>
+      <p data-reveal>{log.body}</p>
+    </div>
+    <ul class="list" role="list">
+      {log.entries.map((e) => {
+        const planned = e.part === 'N';
+        return (
+          <li data-reveal-item data-part={e.part}>
+            <span class="date">{e.date}</span>
+            <Mark lit={planned ? 'none' : e.part} litColor="var(--mark-s)" base={planned ? 'var(--soft)' : 'var(--line)'} class="shape" />
+            <span class={`title${planned ? ' title--next' : ''}`}>{e.title}</span>
+            <span class="team">{e.team}</span>
+            <span class="st">
+              <Status kind={planned ? 'plan' : 'done'} label={planned ? 'planned' : 'done'} />
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+<style>
+  .log { border-top: 1px solid var(--line); }
+  .in { padding-block: clamp(56px, 6vw, 96px); display: flex; flex-wrap: wrap; align-items: flex-start; gap: 40px 64px; }
+  .head { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+  .head p { max-width: 360px; font-size: 16px; line-height: 1.75; color: var(--soft); }
+  .list { flex: 2 1 560px; min-width: 0; border-top: 1px solid var(--fg); }
+  li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding-block: 22px; border-bottom: 1px solid var(--line); }
+  .date { flex: 0 0 76px; font-family: var(--font-label); font-size: 13px; color: var(--soft); font-variant-numeric: tabular-nums; }
+  li :global(.shape) { flex: none; display: block; width: 80px; height: auto; }
+  .title { flex: 1 1 260px; min-width: 0; font-size: 22px; line-height: 1.3; letter-spacing: -0.02em; color: var(--soft); }
+  .title--next { color: var(--fg); }
+  .team { flex: 0 0 120px; font-family: var(--font-label); font-size: 13px; color: var(--soft); }
+  .st { flex: 0 0 96px; display: flex; }
+</style>

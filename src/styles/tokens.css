@@ -1,0 +1,21 @@
+/* Static design-system tokens. Per-colorway colour tokens (--bg --fg --soft --line --panel --dim
+   --pg-bg --pg-fg --mark --mark-s --accent --on-accent --t-a --t-d --t-l)
+   are set on <html data-colorway style="..."> from src/data/colorways.ts. */
+:root {
+  /* Type: Adobe faces by name only (never embedded); Inter / Noto Sans KR from Google Fonts. */
+  --font-body: 'Inter', 'Noto Sans KR', sans-serif;
+  --font-display: 'Miller Banner', 'Inter', 'Noto Sans KR', sans-serif;
+  --font-head: 'Herb', 'Inter', 'Noto Sans KR', sans-serif;
+  --font-label: 'Dazzle Unicase', 'Dazzle', 'Inter', sans-serif;
+
+  /* Fluid scale (from the prototype) */
+  --gutter: clamp(20px, 3.4vw, 48px);
+  --max: 1440px;
+  --fs-display: clamp(48px, 7.4vw, 112px); /* h2 */
+  --fs-name: clamp(52px, 9.5vw, 148px);    /* team names */
+  --fs-label: 13px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}

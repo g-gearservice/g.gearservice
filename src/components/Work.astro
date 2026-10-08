@@ -1,0 +1,40 @@
+---
+import Eyebrow from './Eyebrow.astro';
+import Status from './Status.astro';
+import { work } from '../data/content';
+---
+<section id="work" data-section="work" class="work">
+  <div class="wrap in">
+    <div class="head">
+      <Eyebrow>{work.eyebrow}</Eyebrow>
+      <h2 class="h2" data-reveal="display">{work.title}</h2>
+    </div>
+    <ul class="list" role="list">
+      {work.items.map((w) => (
+        <li data-reveal-item>
+          <div class="title">
+            {w.href
+              ? <a href={w.href} rel="noopener">{w.name} <span aria-hidden="true">↗</span></a>
+              : <span class="plain">{w.name}</span>}
+          </div>
+          <div class="meta">
+            <span class="desc">{w.desc}</span>
+            <div class="statuses">{w.statuses.map((s) => <Status kind={s.kind} label={s.label} />)}</div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .in { padding-block: clamp(56px, 6vw, 96px); display: flex; flex-direction: column; gap: clamp(36px, 4.4vw, 64px); }
+  .head { display: flex; flex-direction: column; gap: 20px; }
+  .list { border-bottom: 1px solid var(--line); }
+  li { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 48px; padding-block: clamp(24px, 3vw, 40px); border-top: 1px solid var(--fg); }
+  .title { flex: 2 1 440px; }
+  a { display: inline-block; color: var(--fg); font-family: var(--font-display); font-size: clamp(44px, 8.4vw, 128px); line-height: 1.02; letter-spacing: -0.05em; font-weight: 500; text-decoration: underline; text-decoration-thickness: 0.04em; text-underline-offset: 0.12em; overflow-wrap: break-word; }
+  .plain { display: inline-block; font-family: var(--font-display); font-size: clamp(30px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 500; overflow-wrap: anywhere; }
+  .meta { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .desc { font-size: 17px; line-height: 1.6; }
+  .statuses { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+</style>

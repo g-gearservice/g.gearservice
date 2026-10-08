@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Landing from '../components/Landing.astro';
+import { routes } from '../data/colorways';
+
+export function getStaticPaths() {
+  return Object.entries(routes)
+    .filter(([path]) => path !== '') // "/" is index.astro
+    .map(([path, key]) => ({ params: { colorway: path }, props: { key } }));
+}
+const { key } = Astro.props;
+---
+<Base colorway={key}><Landing /></Base>

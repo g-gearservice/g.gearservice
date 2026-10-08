@@ -1,0 +1,51 @@
+---
+import Mark from './Mark.astro';
+import Eyebrow from './Eyebrow.astro';
+import { anatomy } from '../data/content';
+const [L, C, R] = anatomy.labels;
+---
+<section id="anatomy" data-section="anatomy" class="anatomy">
+  <div class="wrap head">
+    <Eyebrow>{anatomy.eyebrow}</Eyebrow>
+    <h2 class="h2" data-reveal="display">{anatomy.title}</h2>
+    <p class="lede" data-reveal>{anatomy.body}</p>
+  </div>
+  <div class="stage">
+    <div class="bleed" data-stage>
+      <Mark lit="all" split label="The g.gearservice mark: a left arc, a right arc and a central lens" class="mark" />
+      <div class="labels">
+        <span class="line line--L" aria-hidden="true" data-leader="L"></span>
+        <span class="line line--C" aria-hidden="true" data-leader="C"></span>
+        <span class="line line--R" aria-hidden="true" data-leader="R"></span>
+        <div class="lab lab--L" data-label="L" ><span class="k">{L.kicker}</span><span class="n">{L.name}</span></div>
+        <div class="lab lab--C" data-label="C" ><span class="k">{C.kicker}</span><span class="n">{C.name}</span></div>
+        <div class="lab lab--R" data-label="R" ><span class="k">{R.kicker}</span><span class="n">{R.name}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .anatomy { border-top: 1px solid var(--line); overflow: hidden; }
+  .head { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; gap: 20px; }
+  .lede { max-width: 560px; }
+  .stage { width: 100%; overflow: hidden; padding-top: clamp(32px, 4vw, 56px); }
+  .bleed { position: relative; width: 116vw; margin-left: -8vw; }
+  .bleed :global(.mark) { display: block; width: 100%; height: auto; }
+  .labels { position: relative; height: 132px; }
+  .line { position: absolute; width: 1px; background: var(--fg); transform-origin: top center; }
+  .line--L { left: 9.3%; top: 0; height: 56px; }
+  .line--C { left: 50%; top: -8.39vw; height: calc(8.39vw + 56px); }
+  .line--R { left: 90.7%; top: 0; height: 56px; }
+  .lab { position: absolute; top: 56px; display: flex; flex-direction: column; gap: 4px; white-space: nowrap; }
+  .lab--L { left: calc(9.3% + 14px); }
+  .lab--C { left: calc(50% + 14px); }
+  .lab--R { right: calc(9.3% + 14px); align-items: flex-end; }
+  .k { font-family: var(--font-label); font-size: 13px; color: var(--soft); }
+  .n { font-family: var(--font-head); font-size: clamp(20px, 2.8vw, 40px); letter-spacing: -0.04em; font-weight: 500; line-height: 1.1; }
+  /* narrow phones: the centre label drops a row so it cannot collide with "delta team" */
+  @media (max-width: 560px) {
+    .labels { height: 192px; }
+    .line--C { height: calc(8.39vw + 116px); }
+    .lab--C { top: 116px; }
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+import type { StatusKind } from '../data/content';
+interface Props { kind: StatusKind; label: string }
+const { kind, label } = Astro.props;
+const quiet = kind === 'done' || kind === 'exp';
+---
+{quiet ? (
+  <span class="quiet" data-status={kind}><span class={`dot dot--${kind}`} aria-hidden="true"></span>{label}</span>
+) : (
+  <span class={`pill pill--${kind}`} data-status={kind}>{label}</span>
+)}
+<style>
+  .quiet { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-label); font-size: 13px; color: var(--soft); }
+  .dot { display: block; flex: none; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
+  .dot--done { background: var(--mark-s); }
+  .dot--exp { border: 1px solid var(--soft); }
+  .pill { flex: none; display: inline-block; white-space: nowrap; font-family: var(--font-label); font-size: 13px; border-radius: 999px; font-weight: 600; }
+  .pill--prog { padding: 5px 14px; background: var(--pg-bg); color: var(--pg-fg); }
+  .pill--plan { padding: 4px 13px; border: 1px solid var(--fg); color: var(--fg); }
+</style>

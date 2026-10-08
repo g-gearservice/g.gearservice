@@ -1,0 +1,45 @@
+@import './tokens.css';
+@import './motion.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); }
+
+.page {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: clip;
+}
+.page :where(h1, h2, h3, p, ul, ol) { margin: 0; }
+.page :where(ul, ol) { list-style: none; padding: 0; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding-inline: var(--gutter); }
+
+.soft { color: var(--soft); }
+
+/* section heading: 48-112px display */
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+}
+/* team / step name */
+.name {
+  font-family: var(--font-head);
+  font-size: var(--fs-name);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+}
+.lede { font-size: 17px; line-height: 1.75; color: var(--soft); }
+.label { font-family: var(--font-label); font-size: var(--fs-label); color: var(--soft); }
+
+/* SVG mark: stroke layers share these attributes (paths are <use>d from #mark-paths) */
+.mk { fill: none; stroke-width: 24; stroke-miterlimit: 10; }
+
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }

@@ -1,0 +1,27 @@
+---
+import Glyph from './Glyph.astro';
+import { nav } from '../data/content';
+---
+<header data-hero-chrome>
+  <div class="wrap bar">
+    <a class="home" href="#top" aria-label="g.gearservice, back to top"><Glyph size={26} /></a>
+    <nav aria-label="Main">
+      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a class="cta" href="#contact">contact</a>
+    </nav>
+  </div>
+</header>
+<style>
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-block: 12px; }
+  .home { display: flex; padding: 11px 11px 11px 0; }
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 2px; font-family: var(--font-label); font-size: 15px; }
+  nav a { text-decoration: none; color: var(--fg); padding: 12px 10px; }
+  nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
+  /* 375px: glyph + 4 links must stay on one row (full-size paddings total ~334px of 335px) */
+  @media (max-width: 420px) {
+    .bar { flex-wrap: nowrap; gap: 0 8px; }
+    nav { flex-wrap: nowrap; gap: 0; }
+    nav a { padding-inline: 6px; }
+    nav a.cta { margin-left: 4px; padding-inline: 14px; }
+  }
+</style>

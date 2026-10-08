@@ -1,0 +1,26 @@
+---
+import Mark from './Mark.astro';
+import { statement } from '../data/content';
+---
+<section data-section="statement" class="statement">
+  <div class="inner">
+    <div class="poster">
+      <Mark lit="L" viewBox="103 369 182 447" class="br br--l" reveal="arc" style="--dx:-6vw" />
+      <h2 data-reveal="display">{statement.title[0]}<br />{statement.title[1]}</h2>
+      <Mark lit="R" viewBox="795 369 183 447" class="br br--r" reveal="arc" style="--dx:6vw" />
+    </div>
+    <p data-reveal>{statement.body}</p>
+  </div>
+</section>
+<style>
+  .statement { overflow: hidden; }
+  .inner { padding-block: clamp(96px, 14vw, 220px); display: flex; flex-direction: column; align-items: center; gap: clamp(40px, 5vw, 72px); }
+  .poster { width: 100%; padding-inline: clamp(12px, 2vw, 32px); display: flex; align-items: center; justify-content: space-between; font-size: clamp(52px, 15vw, 260px); }
+  /* 375px: line is ~6em wide (2 brackets 1.71em + "two arcs," ~4.3em). 13.5vw -> ~304px of 351px available, ~13% slack. */
+  @media (max-width: 600px) { .poster { font-size: 13.5vw; } }
+  .poster :global(.br) { flex: none; height: 2.1em; display: block; }
+  .poster :global(.br--l) { width: 0.856em; }
+  .poster :global(.br--r) { width: 0.859em; }
+  h2 { font-family: var(--font-display); font-size: 1em; line-height: 0.95; letter-spacing: -0.045em; font-weight: 500; text-align: center; white-space: nowrap; }
+  p { padding-inline: var(--gutter); max-width: 700px; text-align: center; font-size: clamp(18px, 1.7vw, 24px); line-height: 1.75; color: var(--soft); }
+</style>

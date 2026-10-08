@@ -1,0 +1,8 @@
+---
+// "— label" section eyebrow.
+---
+<span class="eyebrow" data-reveal><span class="eyebrow__rule" aria-hidden="true"></span><slot /></span>
+<style>
+  .eyebrow { display: flex; align-items: center; gap: 14px; font-family: var(--font-label); font-size: 13px; color: var(--soft); }
+  .eyebrow__rule { display: block; width: 28px; height: 1px; background: var(--fg); transform-origin: left center; }
+</style>

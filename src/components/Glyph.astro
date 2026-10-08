@@ -1,0 +1,6 @@
+---
+// The small "( )" arc-pair glyph used for nav home, bullets, hand-off markers and the CTA.
+interface Props { size?: number; stroke?: string }
+const { size = 22, stroke = 'var(--fg)' } = Astro.props;
+---
+<svg width={size} height={size} viewBox="0 0 22 22" aria-hidden="true" data-glyph style={`flex:none;fill:none;stroke:${stroke};stroke-width:2.4`}><path d="M3 2A10 10 0 0 1 3 20" /><path d="M19 2A10 10 0 0 0 19 20" /></svg>

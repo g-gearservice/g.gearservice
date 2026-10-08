@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import MarkDefs from '../components/MarkDefs.astro';
+import { colorways, cssVars, type ColorwayKey } from '../data/colorways';
+
+interface Props { colorway: ColorwayKey; title?: string; description?: string }
+const {
+  colorway,
+  title = 'g.gearservice',
+  description = 'Two arcs, one lens. g.gearservice is a small product team: alpha, delta and one lead who interlock like a single mark.',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-colorway={colorway} style={cssVars(colorway)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={colorways[colorway].bg} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" />
+    <script is:inline>
+      // .js gates every hidden start state, so no-JS visitors see the whole page.
+      // no-intro: skip the hero replay when flipping colorway routes in one tab session.
+      (function(d){d.classList.add('js');
+        try{ if(sessionStorage.getItem('intro')) d.classList.add('no-intro'); else sessionStorage.setItem('intro','1'); }catch(e){}
+        // if the motion module never runs, un-gate after 3s rather than leave content hidden
+        setTimeout(function(){ if(!d.classList.contains('motion-ready')) d.classList.remove('js'); },3000);
+      })(document.documentElement);
+    </script>
+  </head>
+  <body>
+    <MarkDefs />
+    <slot />
+    <script>import '../scripts/motion';</script>
+  </body>
+</html>

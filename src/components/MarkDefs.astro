@@ -1,0 +1,13 @@
+---
+// Paints the artwork once; every <Mark> / <Wordmark> <use>s it. Rendered once by Base.astro.
+import { markPaths, wordmarkPaths, clipPolygons } from '../data/marks';
+---
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="mark-paths">{markPaths.map((d) => <path d={d} />)}</g>
+    <g id="wordmark-paths">{wordmarkPaths.map((d) => <path d={d} />)}</g>
+    {Object.entries(clipPolygons).map(([part, points]) => (
+      <clipPath id={`mark-clip-${part}`}><polygon points={points} /></clipPath>
+    ))}
+  </defs>
+</svg>

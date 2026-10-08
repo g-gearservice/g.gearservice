@@ -1,0 +1,75 @@
+---
+import Mark from './Mark.astro';
+import Glyph from './Glyph.astro';
+import Eyebrow from './Eyebrow.astro';
+import { team } from '../data/content';
+const { alpha, lens, delta } = team;
+---
+<section id="team" data-section="team" class="team">
+  <div class="wrap head">
+    <Eyebrow>{team.eyebrow}</Eyebrow>
+    <h2 class="h2" data-reveal="display">{team.title}</h2>
+  </div>
+
+  <!-- alpha: shape left, text right -->
+  <div id="alpha" class="row row--alpha" data-team="alpha">
+    <Mark lit="L" base="var(--dim)" class="shape" reveal="part" from="left" />
+    <div class="text">
+      <span class="label" data-reveal>{alpha.kicker}</span>
+      <h3 class="name" data-reveal="display">{alpha.name}</h3>
+      <p class="body" data-reveal>{alpha.body}</p>
+      <ul role="list" class="items">
+        {alpha.items.map((i) => (
+          <li data-reveal-item><Glyph /><span>{i.term} <span class="soft">· {i.note}</span></span></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <!-- pistolinkr: lens lit, centered, mark overflows below into the next row -->
+  <div id="lens" class="lens" data-team="lens">
+    <div class="wrap lens__in">
+      <span class="label" data-reveal>{lens.kicker}</span>
+      <h3 class="name" data-reveal="display">{lens.name}</h3>
+      <p class="body" data-reveal>{lens.body}</p>
+      <ul role="list" class="items items--c">
+        {lens.items.map((i) => <li data-reveal-item><Glyph />{i}</li>)}
+      </ul>
+      <Mark lit="C" base="var(--dim)" class="lens__shape" reveal="part" from="center" />
+    </div>
+  </div>
+
+  <!-- delta: text left, shape right (mirror of alpha) -->
+  <div id="delta" class="row row--delta" data-team="delta">
+    <div class="text">
+      <span class="label" data-reveal>{delta.kicker}</span>
+      <h3 class="name" data-reveal="display">{delta.name}</h3>
+      <p class="body" data-reveal>{delta.body}</p>
+      <ul role="list" class="items">
+        {delta.items.map((i) => (
+          <li data-reveal-item><Glyph /><span>{i.term} <span class="soft">· {i.note}</span></span></li>
+        ))}
+      </ul>
+    </div>
+    <Mark lit="R" base="var(--dim)" class="shape" reveal="part" from="right" />
+  </div>
+</section>
+<style>
+  .team { border-top: 1px solid var(--line); overflow: hidden; }
+  .head { padding-top: clamp(72px, 9vw, 128px); display: flex; flex-direction: column; gap: 20px; }
+  .row { max-width: var(--max); margin: 0 auto; padding-inline: var(--gutter); display: flex; flex-wrap: wrap; align-items: center; gap: 48px clamp(32px, 6vw, 96px); }
+  .row--alpha { margin-top: clamp(48px, 6vw, 88px); padding-block: clamp(40px, 5vw, 72px); border-top: 1px solid var(--line); }
+  .row--delta { padding-top: calc(7vw + clamp(40px, 5vw, 72px)); padding-bottom: clamp(72px, 9vw, 128px); }
+  .row :global(.shape) { flex: 0 1 46%; min-width: min(100%, 320px); height: auto; display: block; }
+  .text { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+  .body { max-width: 520px; font-size: 17px; line-height: 1.75; }
+  .items { display: flex; flex-direction: column; gap: 12px; font-size: 17px; line-height: 1.5; }
+  .items li { display: flex; align-items: center; gap: 14px; }
+
+  .lens { border-top: 1px solid var(--line); position: relative; z-index: 1; }
+  .lens__in { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .lens .name { text-align: center; }
+  .lens .body { max-width: 560px; }
+  .items--c { align-self: center; }
+  .lens :global(.lens__shape) { display: block; width: min(100%, 860px); height: auto; margin-top: clamp(24px, 4vw, 56px); margin-bottom: -7vw; }
+</style>

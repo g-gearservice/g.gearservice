@@ -1,0 +1,45 @@
+---
+// The g.gearservice mark. Parts: L = left arc (alpha), C = lens (pistolinkr), R = right arc (delta).
+//   lit    which part is drawn in `litColor` (clipped to that part) - 'all' = whole mark, 'none' = nothing
+//   base   optional colour of a full-mark layer beneath (the dimmed mark)
+//   split  also emit L/C/R overlay groups (opacity 0) so motion can light an individual part
+// DOM hooks for motion: [data-mark] > [data-mark-base], [data-mark-lit][data-part], [data-mark-part=L|C|R]
+import type { MarkPart } from '../data/marks';
+
+interface Props {
+  lit?: MarkPart | 'all' | 'none';
+  litColor?: string;
+  base?: string;
+  split?: boolean;
+  viewBox?: string;
+  label?: string;
+  class?: string;
+  style?: string;
+  reveal?: 'part' | 'arc' | 'rise'; // motion.css entrance (see data-reveal)
+  from?: 'left' | 'right' | 'center'; // reveal="part": the side the part enters from
+}
+const {
+  lit = 'all',
+  litColor = 'var(--mark)',
+  base,
+  split = false,
+  viewBox = '103 369 875 447',
+  label,
+  class: className,
+  style,
+  reveal,
+  from,
+} = Astro.props;
+
+const clip = (p: MarkPart | 'all') => (p === 'all' ? undefined : `url(#mark-clip-${p})`);
+const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' };
+---
+<svg viewBox={viewBox} class={className} style={style} data-mark data-lit={lit} data-reveal={reveal} data-from={reveal === 'part' ? from : undefined} {...a11y}>
+  {base && <g class="mk" data-mark-base style={`stroke:${base}`}><use href="#mark-paths" /></g>}
+  {lit !== 'none' && (
+    <g class="mk" data-mark-lit data-part={lit} clip-path={clip(lit)} style={`stroke:${litColor}`}><use href="#mark-paths" /></g>
+  )}
+  {split && (['L', 'C', 'R'] as MarkPart[]).map((p) => (
+    <g class="mk" data-mark-part={p} clip-path={clip(p)} style={`stroke:${litColor};opacity:0`}><use href="#mark-paths" /></g>
+  ))}
+</svg>

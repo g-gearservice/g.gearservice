@@ -1,0 +1,49 @@
+---
+import Mark from './Mark.astro';
+import Glyph from './Glyph.astro';
+import Eyebrow from './Eyebrow.astro';
+import { process } from '../data/content';
+---
+<section id="process" data-section="process" class="process">
+  <div class="wrap in">
+    <div class="head">
+      <Eyebrow>{process.eyebrow}</Eyebrow>
+      <h2 class="h2" data-reveal="display">{process.title[0]}<br />{process.title[1]}</h2>
+      <p class="lede" data-reveal>{process.body}</p>
+    </div>
+    <ol class="steps" role="list">
+      {process.steps.map((s) => (
+        <li data-step={s.n} data-part={s.part} data-reveal-item>
+          <span class="n" aria-hidden="true">{s.n}</span>
+          <div class="bar" aria-hidden="true" data-bar={s.part}>
+            <span class={`rule rule--${s.part}`}></span>
+            {s.handoff && <span class="hand"><Glyph /></span>}
+          </div>
+          <Mark lit={s.part} litColor="var(--mark-s)" base="var(--line)" class="shape" />
+          <h3>{s.title}</h3>
+          <span class="desc">{s.desc}</span>
+          <span class="who">{s.who}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .process { background: var(--panel); }
+  .in { padding-block: clamp(72px, 8vw, 112px); display: flex; flex-direction: column; gap: clamp(40px, 5vw, 72px); }
+  .head { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+  .lede { max-width: 560px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 48px 0; }
+  li { min-width: 0; padding-right: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .n { font-size: clamp(48px, 5vw, 80px); line-height: 1; letter-spacing: -0.045em; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .bar { position: relative; display: flex; align-items: center; height: 22px; }
+  .rule { display: block; flex: 1 1 auto; height: 4px; transform-origin: left center; }
+  .rule--L { background: var(--t-a); }
+  .rule--R { background: var(--t-d); }
+  .rule--C { background: var(--t-l); height: 8px; }
+  .hand { position: absolute; left: 0; top: 0; display: flex; padding-right: 10px; background: var(--panel); }
+  li :global(.shape) { display: block; width: 100%; max-width: 120px; height: auto; }
+  h3 { font-family: var(--font-head); font-size: 24px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 500; }
+  .desc { font-size: 16px; line-height: 1.65; color: var(--soft); }
+  .who { font-family: var(--font-label); font-size: 13px; color: var(--soft); }
+</style>
