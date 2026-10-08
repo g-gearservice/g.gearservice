@@ -15,9 +15,6 @@ import { nav } from '../data/content';
 <style>
   /* sticky at top:0 = fixed for a first-child header, but keeps its flow height (Hero sizes against it) */
   header { position: sticky; top: 0; z-index: 10; }
-  /* iOS 26 Safari won't paint page layers under the status bar, but tints it from a sticky edge's solid color:
-     this ground-color strip makes it fill with --bg, i.e. what the full 32px blur fades to */
-  header::before { content: ''; position: absolute; inset: 0 0 auto; height: 12px; background: var(--bg); }
   .bar { position: relative; }
   /* progressive blur (OuterVale): blur doubles per layer, each masked to a band of the fade */
   .blur { position: absolute; inset: 0 0 -32px; pointer-events: none; }
@@ -28,6 +25,8 @@ import { nav } from '../data/content';
   .blur i:nth-child(4) { backdrop-filter: blur(8px);  mask: linear-gradient(to bottom, #000 0%, #000 10%, transparent 30%); }
   .blur i:nth-child(5) { backdrop-filter: blur(16px); mask: linear-gradient(to bottom, #000 0%, transparent 20%); }
   .blur i:nth-child(6) { backdrop-filter: blur(32px); mask: linear-gradient(to bottom, #000 0%, transparent 10%); }
+  /* phone Safari draws this blur from page twins instead (.ceil, motion.ts): backdrop-filter can't reach under the status bar */
+  @media (pointer: coarse) and (display-mode: browser) { .blur { display: none; } }
   .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-block: 12px; }
   .home { display: flex; padding: 11px 11px 11px 0; }
   nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 2px; font-family: var(--font-label); font-size: 15px; }
