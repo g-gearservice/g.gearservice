@@ -17,6 +17,6 @@ import { wordmarkPaths } from '../data/marks';
 <style>
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .logo-row { display: flex; justify-content: center; padding-bottom: 66px; } /* = the prototype's empty tagline line (8 + 34 + 24) */
-  .logo { width: min(100%, 1240px, calc((100vh - 145px) * 1.487)); width: min(100%, 1240px, calc((100svh - 145px) * 1.487)); }
+  .logo { width: 100%; } /* always spans the nav's gutter lines */
   .logo svg { width: 100%; height: auto; display: block; }
 </style>

@@ -29,6 +29,18 @@ import { nav } from '../data/content';
   .home { display: flex; padding: 11px 11px 11px 0; }
   nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 2px; font-family: var(--font-label); font-size: 15px; }
   nav a { text-decoration: none; color: var(--fg); padding: 12px 10px; }
+  /* Ground-color halo. Invisible on --bg; on a same-colored mark the label reads as --bg. */
+  nav a:not(.cta) {
+    text-shadow:
+      0 0 1px var(--bg),
+      1px 0 0 var(--bg), -1px 0 0 var(--bg), 0 1px 0 var(--bg), 0 -1px 0 var(--bg),
+      1px 1px 0 var(--bg), -1px -1px 0 var(--bg), 1px -1px 0 var(--bg), -1px 1px 0 var(--bg),
+      2px 0 0 var(--bg), -2px 0 0 var(--bg), 0 2px 0 var(--bg), 0 -2px 0 var(--bg),
+      2px 2px 0 var(--bg), -2px 2px 0 var(--bg), 2px -2px 0 var(--bg), -2px -2px 0 var(--bg),
+      3px 0 0 var(--bg), -3px 0 0 var(--bg), 0 3px 0 var(--bg), 0 -3px 0 var(--bg),
+      3px 1px 0 var(--bg), -3px 1px 0 var(--bg), 3px -1px 0 var(--bg), -3px -1px 0 var(--bg),
+      1px 3px 0 var(--bg), -1px 3px 0 var(--bg), 1px -3px 0 var(--bg), -1px -3px 0 var(--bg);
+  }
   nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
   /* 375px: glyph + 4 links must stay on one row (full-size paddings total ~334px of 335px) */
   @media (max-width: 420px) {
