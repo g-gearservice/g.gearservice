@@ -11,9 +11,9 @@ const { alpha, lens, delta } = team;
     <h2 class="h2" data-reveal="display">{team.title}</h2>
   </div>
 
-  <!-- alpha: shape left, text right -->
+  <!-- alpha (top arc): shape left, text right -->
   <div id="alpha" class="row row--alpha" data-team="alpha">
-    <Mark lit="L" base="var(--dim)" class="shape" reveal="part" from="left" />
+    <Mark lit="T" base="var(--dim)" class="shape" reveal="part" from="top" />
     <div class="text">
       <span class="label" data-reveal>{alpha.kicker}</span>
       <h3 class="name" data-reveal="display">{alpha.name}</h3>
@@ -39,7 +39,7 @@ const { alpha, lens, delta } = team;
     </div>
   </div>
 
-  <!-- delta: text left, shape right (mirror of alpha) -->
+  <!-- delta (bottom arc): text left, shape right (mirror of alpha) -->
   <div id="delta" class="row row--delta" data-team="delta">
     <div class="text">
       <span class="label" data-reveal>{delta.kicker}</span>
@@ -51,7 +51,7 @@ const { alpha, lens, delta } = team;
         ))}
       </ul>
     </div>
-    <Mark lit="R" base="var(--dim)" class="shape" reveal="part" from="right" />
+    <Mark lit="B" base="var(--dim)" class="shape" reveal="part" from="bottom" />
   </div>
 </section>
 <style>

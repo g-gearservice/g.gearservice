@@ -2,7 +2,7 @@
 import Mark from './Mark.astro';
 import Eyebrow from './Eyebrow.astro';
 import { anatomy } from '../data/content';
-const [L, C, R] = anatomy.labels;
+const [T, C, B] = anatomy.labels;
 ---
 <section id="anatomy" data-section="anatomy" class="anatomy">
   <div class="wrap head">
@@ -12,14 +12,14 @@ const [L, C, R] = anatomy.labels;
   </div>
   <div class="stage">
     <div class="bleed" data-stage>
-      <Mark lit="all" split label="The g.gearservice mark: a left arc, a right arc and a central lens" class="mark" />
+      <Mark lit="all" split label="The g.gearservice mark: a top arc, a bottom arc and the lens where they cross" class="mark" />
       <div class="labels">
-        <span class="line line--L" aria-hidden="true" data-leader="L"></span>
+        <span class="line line--T" aria-hidden="true" data-leader="T"></span>
         <span class="line line--C" aria-hidden="true" data-leader="C"></span>
-        <span class="line line--R" aria-hidden="true" data-leader="R"></span>
-        <div class="lab lab--L" data-label="L" ><span class="k">{L.kicker}</span><span class="n">{L.name}</span></div>
+        <span class="line line--B" aria-hidden="true" data-leader="B"></span>
+        <div class="lab lab--T" data-label="T" ><span class="k">{T.kicker}</span><span class="n">{T.name}</span></div>
         <div class="lab lab--C" data-label="C" ><span class="k">{C.kicker}</span><span class="n">{C.name}</span></div>
-        <div class="lab lab--R" data-label="R" ><span class="k">{R.kicker}</span><span class="n">{R.name}</span></div>
+        <div class="lab lab--B" data-label="B" ><span class="k">{B.kicker}</span><span class="n">{B.name}</span></div>
       </div>
     </div>
   </div>
@@ -28,24 +28,26 @@ const [L, C, R] = anatomy.labels;
   .anatomy { border-top: 1px solid var(--line); overflow: hidden; }
   .head { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; gap: 20px; }
   .lede { max-width: 560px; }
-  .stage { width: 100%; overflow: hidden; padding-top: clamp(32px, 4vw, 56px); }
+  .stage { width: 100%; overflow: hidden; padding-top: calc(clamp(32px, 4vw, 56px) + 120px); } /* + room for the top-arc label */
   .bleed { position: relative; width: 116vw; margin-left: -8vw; }
   .bleed :global(.mark) { display: block; width: 100%; height: auto; }
-  .labels { position: relative; height: 132px; }
+  .labels { position: relative; height: 132px; } /* top edge = the mark's bottom; the mark is 116vw * 447/875 = 59.26vw tall */
   .line { position: absolute; width: 1px; background: var(--fg); transform-origin: top center; }
-  .line--L { left: 9.3%; top: 0; height: 56px; }
-  .line--C { left: 50%; top: -8.39vw; height: calc(8.39vw + 56px); }
-  .line--R { left: 90.7%; top: 0; height: 56px; }
+  /* top arc: up from its right tip; lens: up to the lens centre (y 592, 29.56vw above the base), crossing the top arc;
+     bottom arc: down from its left leg */
+  .line--T { left: 90.7%; top: calc(-59.26vw - 56px); height: 56px; }
+  .line--C { left: 50%; top: -29.56vw; height: calc(29.56vw + 56px); }
+  .line--B { left: 9.3%; top: 0; height: 56px; }
   .lab { position: absolute; top: 56px; display: flex; flex-direction: column; gap: 4px; white-space: nowrap; }
-  .lab--L { left: calc(9.3% + 14px); }
+  .lab--T { top: calc(-59.26vw - 56px); translate: 0 -100%; right: calc(9.3% + 14px); align-items: flex-end; }
   .lab--C { left: calc(50% + 14px); }
-  .lab--R { right: calc(9.3% + 14px); align-items: flex-end; }
+  .lab--B { left: calc(9.3% + 14px); }
   .k { font-family: var(--font-label); font-size: 13px; color: var(--soft); }
   .n { font-family: var(--font-head); font-size: clamp(20px, 2.8vw, 40px); letter-spacing: -0.04em; font-weight: 500; line-height: 1.1; }
   /* narrow phones: the centre label drops a row so it cannot collide with "delta team" */
   @media (max-width: 560px) {
     .labels { height: 192px; }
-    .line--C { height: calc(8.39vw + 116px); }
+    .line--C { height: calc(29.56vw + 116px); }
     .lab--C { top: 116px; }
   }
   /* desktop: mark rises behind the head so its arc tips sit level with the h2 top
@@ -54,6 +56,6 @@ const [L, C, R] = anatomy.labels;
     .anatomy { display: grid; }
     .head, .stage { grid-area: 1 / 1; }
     .head { position: relative; z-index: 1; align-self: start; width: 100%; pointer-events: none; }
-    .stage { padding-top: calc(clamp(40px, 5vw, 72px) + 36px); }
+    .stage { padding-top: calc(clamp(40px, 5vw, 72px) + 36px + 64px); } /* top-arc label clears the eyebrow row */
   }
 </style>

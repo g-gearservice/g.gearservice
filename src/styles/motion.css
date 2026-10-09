@@ -26,6 +26,42 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   }
 }
 
+/* ---- Hero: pinned two-beat scroll scene, linear so it tracks the finger 1:1.
+   --a (0→1) beat 1: the wordmark rises away first while the lockup glides up until the symbol sits at the viewport's centre.
+   --p (0→1) beat 2: from that centre the top arc goes up, the bottom arc down, and the headline focuses in between.
+   Static state (no JS / reduced motion) is --a: 0, --p: 1 with room laid out in Hero.astro. ---- */
+@property --a { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --p { syntax: '<number>'; inherits: true; initial-value: 1; }
+/* symbol centre is y 592 of the 227-816 lockup = 62% of the box: lift the box 12% (+36px, half the header padding) to centre it */
+[data-section=hero] [data-hero-logo] { translate: 0 calc(var(--a) * (-12% - 36px)); }
+[data-section=hero] [data-wordmark] { transform: translateY(calc(var(--a) * -260px)); opacity: calc(1 - var(--a) * 1.4); } /* SVG user units */
+[data-section=hero] .half--top { transform: translateY(calc(var(--p) * -50%)); }
+[data-section=hero] .half--bot { transform: translateY(calc(var(--p) * 50%)); }
+/* headline waits for the arcs to clear the lens (p .45), then focuses in */
+[data-lens-line] {
+  --t: clamp(0, (var(--p) - 0.45) / 0.55, 1);
+  opacity: var(--t); scale: calc(0.94 + var(--t) * 0.06); filter: blur(calc((1 - var(--t)) * 8px));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-section=hero] {
+    --p: 0; height: 260svh; margin-top: -72px; /* under the header so the pin starts at scroll 0 */
+    /* the parted bottom arc (with the body copy in it) hangs 0.88 lockup heights - 50svh below the stage: make room for it */
+    --lh: min((min(100vw, var(--max)) - 2 * var(--gutter)) * 589 / 875, 100svh - 72px - 2 * var(--gutter));
+    margin-bottom: max(0px, var(--lh) * 0.88 - 50svh + 48px);
+  }
+  .js [data-hero-stage] { position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center; }
+  .js [data-hero-stage] > .wrap { width: 100%; } /* auto margins would shrink it to the logo, which (container-type) has no content width */
+  .js [data-section=hero] [data-hero-logo] { margin: 0 auto; width: min(100%, calc((100svh - 72px - 2 * var(--gutter)) * 875 / 589)); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .js [data-section=hero] { view-timeline: --hero block; }
+    /* beat 1 over the first 35% of the pin, beat 2 to 85%, holds for the rest */
+    .js [data-hero-stage] { animation: split linear both; animation-timeline: --hero; animation-range: contain 72px contain 85%; } /* 72px: the section starts under the header, so scroll 0 is already 72px in */
+    @keyframes split { 0% { --a: 0; --p: 0; } 41% { --a: 1; --p: 0; } 100% { --a: 1; --p: 1; } }
+  }
+}
+
 /* ---- SIGNATURE: anatomy mark lights part by part, scrubbed by scroll (cumulative, reversible) ----
    Base (no support / no JS / reduced motion): whole mark lit, overlays at opacity 0 (set by Mark). */
 @supports (animation-timeline: view()) {
@@ -34,9 +70,9 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
     [data-stage] [data-mark-lit] { opacity: var(--lit-dim); }
     [data-stage] [data-mark-part] { animation: part-on linear both; animation-timeline: --stage; }
     [data-stage] [data-leader], [data-stage] [data-label] { opacity: .5; animation: label-on linear both; animation-timeline: --stage; }
-    [data-mark-part=L], [data-leader=L], [data-label=L] { animation-range: cover 10% cover 26%; }
+    [data-mark-part=T], [data-leader=T], [data-label=T] { animation-range: cover 10% cover 26%; }
     [data-mark-part=C], [data-leader=C], [data-label=C] { animation-range: cover 30% cover 46%; }
-    [data-mark-part=R], [data-leader=R], [data-label=R] { animation-range: cover 50% cover 66%; }
+    [data-mark-part=B], [data-leader=B], [data-label=B] { animation-range: cover 50% cover 66%; }
     @keyframes part-on { from { opacity: 0; } to { opacity: 1; } }
     @keyframes label-on { from { opacity: .5; } to { opacity: 1; } }
   }
@@ -45,7 +81,7 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 .relay [data-mark-lit] { opacity: var(--lit-dim); }
 
 /* ---- Scroll reveal (one-shot; motion.ts adds .is-in) ---- */
-.js [data-reveal]:not([data-reveal=part], [data-reveal=rise], [data-reveal=arc]), .js [data-reveal-item] {
+.js [data-reveal]:not([data-reveal=part], [data-reveal=rise]), .js [data-reveal-item] {
   opacity: 0; transform: translateY(var(--reveal-y));
 }
 .js [data-reveal=display] { --reveal-y: 24px; }
@@ -55,24 +91,14 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 }
 
 /* team marks: the part enters from the side it lives on */
-.js [data-reveal=part][data-from=left]   { clip-path: inset(0 100% 0 0); }
-.js [data-reveal=part][data-from=right]  { clip-path: inset(0 0 0 100%); }
+.js [data-reveal=part][data-from=top]    { clip-path: inset(0 0 100% 0); }
+.js [data-reveal=part][data-from=bottom] { clip-path: inset(100% 0 0 0); }
 .js [data-reveal=part][data-from=center] { clip-path: inset(0 50% 0 50%); }
 .js [data-reveal=part].is-in { clip-path: inset(0); transition: clip-path 700ms var(--ease-out); }
 
 /* footer mark rises from the baseline */
 .js [data-reveal=rise] { clip-path: inset(100% 0 0 0); }
 .js [data-reveal=rise].is-in { clip-path: inset(0); transition: clip-path 800ms var(--ease-out); }
-
-/* statement arcs converge on the headline */
-.js [data-reveal=arc] { opacity: 0; transform: translateX(var(--dx)); }
-.js [data-reveal=arc].is-in { opacity: 1; transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .js [data-reveal=arc] { opacity: 1; transform: none; transition: none; animation: arc-in linear both; animation-timeline: view(); animation-range: entry 0% entry 100%; }
-    @keyframes arc-in { from { opacity: 0; transform: translateX(var(--dx)); } to { opacity: 1; transform: none; } }
-  }
-}
 
 /* process rules + eyebrow rules draw left to right with their row */
 .js [data-reveal-item] .rule { transform: scaleX(0); }
