@@ -5,32 +5,35 @@ import 'lenis/dist/lenis.css';
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Keep the footer's --bleed (Footer.astro) below the visible end so phone Safari draws it under its bar.
-const bleed = () => parseFloat(getComputedStyle(root).getPropertyValue('--bleed')) || 0;
-const max = () => root.scrollHeight - innerHeight - bleed();
-
-// Slower, eased scroll for wheel AND touch. lerp/*Multiplier are the speed knobs (Lenis defaults: 0.1 / 1).
+// Slower, eased wheel scroll. lerp/wheelMultiplier are the speed knobs (Lenis defaults: 0.1 / 1).
+// Touch stays native: JS-driven touch (syncTouch) dropped frames on phones.
 // Anchor offset = sticky header height (matches scroll-padding-top in global.css).
-const lenis = reduce ? null : new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, syncTouch: true, touchMultiplier: 0.7, anchors: { offset: -72 } });
-if (lenis) {
-  // Lenis clamps every target (drag + its own inertia) to limit: a hard stop at the bleed, never a bounce past it.
-  Object.defineProperty(lenis, 'limit', { get: () => Math.max(0, max()) });
-} else {
-  // Native scroll: block drags past the end, kill momentum that coasts into the bleed (overflow toggle stops iOS momentum).
-  let y0 = 0;
-  addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; }, { passive: true });
-  addEventListener('touchmove', (e) => {
-    const y = e.touches[0].clientY;
-    if (bleed() && y < y0 && scrollY >= max() - 1) e.preventDefault();
-    y0 = y;
-  }, { passive: false });
-  addEventListener('scroll', () => {
-    if (!bleed() || scrollY <= max()) return;
-    root.style.overflow = 'hidden';
-    scrollTo(0, max());
-    requestAnimationFrame(() => { root.style.overflow = ''; });
-  }, { passive: true });
-}
+const coarse = matchMedia('(pointer: coarse)').matches;
+if (!reduce && !coarse) new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } });
+
+// Header slides away while scrolling down, back on any scroll up (html.nav-up → Header.astro); the blur stays. Always shown near the top.
+// Slide time follows scroll speed: a flick snaps it (150ms), a slow drag eases it (600ms). --nav-dur, set at each flip.
+let lastY = scrollY;
+let py = lastY;
+let pt = performance.now();
+let v = 0; // px/ms, smoothed over every scroll event (~1 per frame)
+addEventListener('scroll', () => {
+  const y = scrollY;
+  const t = performance.now();
+  const dy = Math.abs(y - py);
+  // first event after a pause: the gap is idle time, not motion, so count it as one frame
+  v = t - pt > 100 ? dy / 16 : v * 0.5 + (dy / Math.max(t - pt, 1)) * 0.5;
+  py = y;
+  pt = t;
+  if (Math.abs(y - lastY) < 6) return; // ignore jitter
+  const up = y > lastY && y > 72;
+  if (up !== root.classList.contains('nav-up')) {
+    const k = Math.min(Math.max((v - 0.3) / (3 - 0.3), 0), 1); // 0.3 px/ms = slow … 3 px/ms = flick
+    root.style.setProperty('--nav-dur', `${Math.round(600 - k * 450)}ms`);
+    root.classList.toggle('nav-up', up);
+  }
+  lastY = y;
+}, { passive: true });
 
 const io = new IntersectionObserver(
   (entries) => {
@@ -69,50 +72,3 @@ if (stage && !reduce && !CSS.supports('animation-timeline: view()')) {
   ).observe(stage);
 }
 
-// Phone Safari paints the document above the viewport under the status bar, but no backdrop-filter there (it only
-// tints the bar with --bg). So, as regiontype.com does, the header's progressive blur is drawn from blurred twins of
-// the page instead: a band (.ceil in global.css) from the top of the screen down past the header, re-placed every
-// frame. Each layer = ground + twin blurred at one strength, masked shorter the stronger it is.
-if (matchMedia('(pointer: coarse) and (display-mode: browser)').matches) {
-  const page = document.querySelector<HTMLElement>('.page')!;
-  const header = page.querySelector('header')!;
-  const above = 120; // covers the status bar
-  const band = document.createElement('div');
-  band.className = 'ceil';
-  band.setAttribute('aria-hidden', 'true');
-  band.inert = true;
-  const all = page.querySelectorAll('*');
-  const twins = new Map<Element, Element[]>();
-  const pages = [4, 12, 32].map((b) => {
-    const layer = band.appendChild(document.createElement('div'));
-    layer.style.setProperty('--b', `${b}px`);
-    const twin = layer.appendChild(page.cloneNode(true) as HTMLElement);
-    twin.removeAttribute('id');
-    twin.querySelectorAll('*').forEach((el, i) => {
-      el.removeAttribute('id');
-      twins.set(all[i], [...(twins.get(all[i]) ?? []), el]);
-    });
-    return twin;
-  });
-  // keep reveal classes / inline vars in step with the real page
-  new MutationObserver((ms) => ms.forEach(({ target, attributeName: n }) => {
-    const v = (target as Element).getAttribute(n!);
-    twins.get(target as Element)?.forEach((t) => (v === null ? t.removeAttribute(n!) : t.setAttribute(n!, v)));
-  })).observe(page, { subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
-  document.body.append(band);
-  const place = () => {
-    const y = scrollY - above;
-    band.style.top = `${y}px`;
-    for (const t of pages) t.style.top = `${-y}px`;
-  };
-  const size = () => {
-    band.style.setProperty('--s', `${above}px`);
-    band.style.setProperty('--h', `${header.offsetHeight + 32}px`);
-    place();
-  };
-  size();
-  addEventListener('resize', size, { passive: true });
-  // Lenis moves the page inside its rAF: follow in the same frame, or the band lags a frame behind the content
-  if (lenis) lenis.on('scroll', place);
-  else addEventListener('scroll', place, { passive: true });
-}

@@ -48,4 +48,12 @@ const [L, C, R] = anatomy.labels;
     .line--C { height: calc(8.39vw + 116px); }
     .lab--C { top: 116px; }
   }
+  /* desktop: mark rises behind the head so its arc tips sit level with the h2 top
+     (head padding + eyebrow ~16px + 20px gap) */
+  @media (min-width: 900px) {
+    .anatomy { display: grid; }
+    .head, .stage { grid-area: 1 / 1; }
+    .head { position: relative; z-index: 1; align-self: start; width: 100%; pointer-events: none; }
+    .stage { padding-top: calc(clamp(40px, 5vw, 72px) + 36px); }
+  }
 </style>

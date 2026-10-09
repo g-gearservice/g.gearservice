@@ -2,6 +2,10 @@
 @import './motion.css';
 
 *, *::before, *::after { box-sizing: border-box; }
+/* top blur band edges, registered so they transition (a gradient's stops can't otherwise) */
+@property --m0 { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --m1 { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 72px; /* sticky header height */ }
 body { margin: 0; background: var(--bg); color: var(--fg); }
 
@@ -43,14 +47,3 @@ body { margin: 0; background: var(--bg); color: var(--fg); }
 .mk { fill: none; stroke-width: 24; stroke-miterlimit: 10; }
 
 :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
-
-/* Phone Safari: the header's progressive blur, drawn from blurred page twins (motion.ts) so it reaches the top of the screen.
-   --s = band above the viewport (status bar), --h = header + 32px fade (same span as Header.astro's .blur).
-   overflow: clip, not hidden: a scroll container would capture the twins' view() timelines. */
-.ceil { position: absolute; left: 0; width: 100%; height: calc(var(--s) + var(--h)); overflow: clip; pointer-events: none; z-index: 9; }
-.ceil > div { position: absolute; inset: 0; overflow: clip; background: var(--bg); }
-.ceil > div:nth-child(1) { mask: linear-gradient(#000 calc(var(--s) + var(--h) * .45), transparent calc(var(--s) + var(--h) * .7)); }
-.ceil > div:nth-child(2) { mask: linear-gradient(#000 calc(var(--s) + var(--h) * .25), transparent calc(var(--s) + var(--h) * .45)); }
-.ceil > div:nth-child(3) { mask: linear-gradient(#000 calc(var(--s) + var(--h) * .1), transparent calc(var(--s) + var(--h) * .25)); }
-.ceil .page { position: relative; filter: blur(var(--b)); }
-.ceil header { visibility: hidden; }

@@ -14,7 +14,7 @@ const INK = { bg: '#1A1A1A', fg: '#E6E6E6', soft: '#B5B5B5', line: '#3A3A3A', pa
 
 export const colorways = {
   'red-mist':    { ...RED, mark: '#E6E6E6', markS: '#E6E6E6', accent: '#E6E6E6', onAccent: '#9F0000', tA: '#E6E6E6', tD: '#E6E6E6', tL: '#E6E6E6' },
-  'red-black':   { ...RED, mark: '#000000', markS: '#E6E6E6', accent: '#000000', onAccent: '#E6E6E6', tA: '#E6E6E6', tD: '#E6E6E6', tL: '#E6E6E6' },
+  'red-black':   { ...RED, fg: '#000000', soft: '#000000', line: 'rgba(0,0,0,0.4)', pgFg: '#000000', mark: '#000000', markS: '#000000', accent: '#000000', onAccent: '#9F0000', tA: '#000000', tD: '#000000', tL: '#000000' },
   'paper-black': { bg: '#F2F2F2', fg: '#000000', soft: '#3D3D3D', line: '#CFCFCF', panel: '#FFFFFF', dim: '#CFCFCF', pgBg: '#FCAE17', pgFg: '#000000', mark: '#000000', markS: '#000000', accent: '#000000', onAccent: '#F2F2F2', tA: '#00C575', tD: '#FCAE17', tL: '#9F0000' },
   'ink-mist':    { ...INK, mark: '#E6E6E6', markS: '#E6E6E6', accent: '#E6E6E6', onAccent: '#1A1A1A', tA: '#E6E6E6', tD: '#E6E6E6', tL: '#E6E6E6' },
   'ink-green':   { ...INK, mark: '#00C575', markS: '#00C575', accent: '#00C575', onAccent: '#1A1A1A', tA: '#00C575', tD: '#00C575', tL: '#00C575' },
@@ -25,7 +25,7 @@ export type ColorwayKey = keyof typeof colorways;
 
 // route (no leading/trailing slash; '' = "/") -> colorway
 export const routes: Record<string, ColorwayKey> = {
-  '': 'red-mist',
+  '': 'paper-black', // home = /white
   'red/white': 'red-mist',
   'red/black': 'red-black',
   'white': 'paper-black',
