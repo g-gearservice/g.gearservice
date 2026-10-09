@@ -1,2 +1,8 @@
+packages:
+  - '.'
+# pnpm 11 (local)
 allowBuilds:
   esbuild: true
+# pnpm 10 (Cloudflare build)
+onlyBuiltDependencies:
+  - esbuild
