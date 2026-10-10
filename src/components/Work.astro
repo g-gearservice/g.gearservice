@@ -82,7 +82,7 @@ import { work } from '../data/content';
   .list { border-bottom: 1px solid var(--line); }
   li { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 48px; padding-block: clamp(24px, 3vw, 40px); border-top: 1px solid var(--fg); }
   .title { flex: 2 1 440px; }
-  a { display: inline-block; color: var(--fg); font-family: var(--font-display); /* same size as .plain, the unlinked names below */ font-size: clamp(30px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 500; text-decoration: underline; text-decoration-thickness: 0.04em; text-underline-offset: 0.12em; overflow-wrap: break-word; }
+  a { display: inline-block; color: var(--fg); font-family: var(--font-display); /* same size as .plain, the unlinked names below */ font-size: clamp(30px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 500; text-decoration: underline; text-decoration-thickness: 0.04em; text-underline-offset: 0.12em; overflow-wrap: break-word; transition: text-underline-offset 250ms var(--ease-out); }
   .plain { display: inline-block; font-family: var(--font-display); font-size: clamp(30px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 500; overflow-wrap: anywhere; }
   .meta { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
   .desc { font-size: 17px; line-height: 1.6; }
@@ -110,6 +110,7 @@ import { work } from '../data/content';
   .ctl--pause { top: 14px; right: 14px; padding: 8px 16px; font-size: 14px; }
   .embed__screen:not(.is-playing) .ctl--pause, .is-playing .ctl--play { display: none; }
   .embed__out { align-self: flex-end; font-family: var(--font-label); font-size: 13px; line-height: 1.4; letter-spacing: 0; font-weight: 400; text-decoration: none; color: var(--soft); }
-  @media (prefers-reduced-motion: reduce) { .embed, .embed__frame { transition: none; } }
+  /* hover drops the underline .12em → .2em (motion.css); it glides both ways instead of jumping */
+  @media (prefers-reduced-motion: reduce) { a, .embed, .embed__frame { transition: none; } }
   .statuses { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 </style>
