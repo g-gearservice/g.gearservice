@@ -81,8 +81,8 @@ import { nav } from '../data/content';
   /* --rev: the reverse colour the ghost paints with (white by default, difference-blended) */
   .ghost { --rev: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 11; pointer-events: none; mix-blend-mode: difference; }
   .ghost .home, .ghost nav a:not(.cta) { --fg: var(--rev); color: var(--rev); }
-  /* red-black: |bg - bg| = black on the ground, still inverted over the mark */
-  :global([data-colorway=red-black]) .ghost { --rev: var(--bg); }
+  /* red-black: plain white too - no blend turns red black and black white at once */
+  :global([data-colorway=red-black]) .ghost { --rev: #fff; mix-blend-mode: normal; }
   /* red-white: no difference blend can turn red ground white (white - red = cyan), so it paints plain white */
   :global([data-colorway=red-mist]) .ghost { --rev: var(--fg); mix-blend-mode: normal; }
   nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
@@ -90,7 +90,7 @@ import { nav } from '../data/content';
      The real pill stays clickable but clear; its hover/press feedback is mirrored onto the ghost. */
   header:not(.ghost) nav a.cta { background: transparent; color: transparent; }
   .ghost nav a.cta { background: var(--rev); color: #000; }
-  :global([data-colorway=red-mist]) .ghost nav a.cta { color: var(--on-accent); } /* not blended: red label on the white pill */
+  :global([data-colorway=red-mist]) .ghost nav a.cta, :global([data-colorway=red-black]) .ghost nav a.cta { color: var(--on-accent); } /* not blended: red label on the white pill */
   header:has(.cta:hover) + .ghost .cta { opacity: .85; }
   header:has(.cta:active) + .ghost .cta { transform: scale(.97); }
   /* 375px: glyph + 4 links must stay on one row (full-size paddings total ~334px of 335px) */
