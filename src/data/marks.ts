@@ -51,7 +51,7 @@ export const wordmarkPaths: string[] = [
 ];
 
 // Parts: T = top arc / alpha (markPaths 0-13), B = bottom arc / delta (14-27),
-// C = the lens / pistolinkr: the middle of the mark between the two crossings (clip polygon, user space of the mark).
-export const lensClip = '379,369 701,369 845,525 795,591 848,664 830,700 701,815 379,815 250,700 235,658 285,591 235,525';
+// C = the lens / pistolinkr: the lips where the arcs overlap - inside the top arc AND inside the bottom arc, strands
+// included, so it comes to a point at the outer crossings (mask #mark-mask-C in MarkDefs).
 
 export type MarkPart = 'T' | 'C' | 'B';

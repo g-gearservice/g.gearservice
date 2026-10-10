@@ -1,8 +1,8 @@
 ---
 // The g.gearservice mark. Parts: T = top arc (alpha), C = lens (pistolinkr), B = bottom arc (delta).
-//   lit    which part is drawn in `litColor` (its own paths, or the lens clip) - 'all' = whole mark, 'none' = nothing
+//   lit    which part is drawn in `litColor` (its own paths, or the lens mask) - 'all' = whole mark, 'none' = nothing
 //   base   optional colour of a full-mark layer beneath (the dimmed mark)
-//   split  also emit T/C/B overlay groups (opacity 0) so motion can light an individual part
+//   split  also emit T/C/B overlay groups (opacity attribute 0, so CSS can override it) so motion can light an individual part
 // DOM hooks for motion: [data-mark] > [data-mark-base], [data-mark-lit][data-part], [data-mark-part=T|C|B]
 import type { MarkPart } from '../data/marks';
 
@@ -32,15 +32,15 @@ const {
 } = Astro.props;
 
 const href = (p: MarkPart | 'all') => (p === 'T' ? '#mark-top' : p === 'B' ? '#mark-bot' : '#mark-paths');
-const clip = (p: MarkPart | 'all') => (p === 'C' ? 'url(#mark-clip-C)' : undefined);
+const mask = (p: MarkPart | 'all') => (p === 'C' ? 'url(#mark-mask-C)' : undefined);
 const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' };
 ---
 <svg viewBox={viewBox} class={className} style={style} data-mark data-lit={lit} data-reveal={reveal} data-from={reveal === 'part' ? from : undefined} {...a11y}>
   {base && <g class="mk" data-mark-base style={`stroke:${base}`}><use href="#mark-paths" /></g>}
   {lit !== 'none' && (
-    <g class="mk" data-mark-lit data-part={lit} clip-path={clip(lit)} style={`stroke:${litColor}`}><use href={href(lit)} /></g>
+    <g class="mk" data-mark-lit data-part={lit} mask={mask(lit)} style={`stroke:${litColor}`}><use href={href(lit)} /></g>
   )}
   {split && (['T', 'C', 'B'] as MarkPart[]).map((p) => (
-    <g class="mk" data-mark-part={p} clip-path={clip(p)} style={`stroke:${litColor};opacity:0`}><use href={href(p)} /></g>
+    <g class="mk" data-mark-part={p} mask={mask(p)} style={`stroke:${litColor}`} opacity="0"><use href={href(p)} /></g>
   ))}
 </svg>

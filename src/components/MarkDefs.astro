@@ -1,6 +1,6 @@
 ---
 // Paints the artwork once; every <Mark> / <Wordmark> <use>s it. Rendered once by Base.astro.
-import { markPaths, wordmarkPaths, lensClip } from '../data/marks';
+import { markPaths, wordmarkPaths } from '../data/marks';
 ---
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -8,6 +8,8 @@ import { markPaths, wordmarkPaths, lensClip } from '../data/marks';
     <g id="mark-bot">{markPaths.slice(14).map((d) => <path d={d} />)}</g>
     <g id="mark-paths"><use href="#mark-top" /><use href="#mark-bot" /></g>
     <g id="wordmark-paths">{wordmarkPaths.map((d) => <path d={d} />)}</g>
-    <clipPath id="mark-clip-C"><polygon points={lensClip} /></clipPath>
+    <!-- lens = (top arc filled + stroked) ∩ (bottom arc filled + stroked); fill closes each arc across its open ends -->
+    <mask id="mark-mask-T" maskUnits="userSpaceOnUse" x="0" y="200" width="1080" height="700"><use href="#mark-top" fill="#fff" stroke="#fff" stroke-width="24" /></mask>
+    <mask id="mark-mask-C" maskUnits="userSpaceOnUse" x="0" y="200" width="1080" height="700"><g mask="url(#mark-mask-T)"><use href="#mark-bot" fill="#fff" stroke="#fff" stroke-width="24" /></g></mask>
   </defs>
 </svg>

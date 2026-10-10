@@ -1,4 +1,4 @@
-// The only client JS: slowed smooth scroll, one-shot scroll reveal + a relay fallback where scroll-driven animation is unsupported.
+// The only client JS: slowed smooth scroll, header hide, one-shot scroll reveal and the hero's scene switch.
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -51,38 +51,15 @@ const io = new IntersectionObserver(
 document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => io.observe(el));
 root.classList.add('motion-ready');
 
-// Hero fallback: same --a / --p as the CSS view timeline (motion.css), from scroll position.
+// Hero scenes: scroll only picks the scene (0-5, one per --step of the pin); motion.css transitions between them.
 const hero = document.querySelector<HTMLElement>('[data-hero-stage]');
-if (hero && !reduce && !CSS.supports('animation-timeline: view()')) {
+if (hero) {
   const sec = hero.parentElement!;
-  const split = () => {
-    const q = (-sec.getBoundingClientRect().top - 72) / ((sec.offsetHeight - innerHeight) * 0.85); // scene runs over the first 85% of the pin
-    const clamp = (n: number) => String(Math.min(Math.max(n, 0), 1));
-    hero.style.setProperty('--a', clamp(q / 0.41));
-    hero.style.setProperty('--p', clamp((q - 0.41) / 0.59));
+  const scene = () => {
+    const q = -sec.getBoundingClientRect().top / (sec.offsetHeight - innerHeight); // 0 → 1 over the pin
+    hero.dataset.scene = String(Math.min(Math.max(Math.round(q * 5), 0), 5));
   };
-  addEventListener('scroll', split, { passive: true });
-  split();
+  addEventListener('scroll', scene, { passive: true });
+  addEventListener('resize', scene);
+  scene();
 }
-
-// Relay fallback (Firefox): same lighting as the CSS scroll timeline, played on enter, reversed on leave.
-const stage = document.querySelector<HTMLElement>('[data-stage]');
-if (stage && !reduce && !CSS.supports('animation-timeline: view()')) {
-  stage.classList.add('relay');
-  const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
-  const anims = (['T', 'C', 'B'] as const).flatMap((p, k) => {
-    const opts = { duration: 500, delay: k * 80, easing: ease, fill: 'both' as const };
-    const part = stage.querySelector(`[data-mark-part=${p}]`);
-    const dimmed = stage.querySelectorAll(`[data-leader=${p}], [data-label=${p}]`);
-    return [
-      part?.animate([{ opacity: 0 }, { opacity: 1 }], opts),
-      ...[...dimmed].map((el) => el.animate([{ opacity: 0.5 }, { opacity: 1 }], opts)),
-    ].filter((a): a is Animation => !!a);
-  });
-  anims.forEach((a) => { a.pause(); a.currentTime = 0; });
-  new IntersectionObserver(
-    ([e]) => anims.forEach((a) => { a.playbackRate = e.isIntersecting ? 1 : -1; a.play(); }), // flipping rate retargets from the current value
-    { threshold: 0.35 },
-  ).observe(stage);
-}
-
