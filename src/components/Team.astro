@@ -84,6 +84,14 @@ const teams = [
   :global(.js) .stage { width: min(100%, 860px, (100svh - 520px) * 875 / 447); min-width: min(100%, 280px); }
   .stage :global(.mark) { display: block; width: 100%; height: auto; }
 
+  /* wide: panel on the left, the mark large on the right, both sharing the pinned screen */
+  @media (min-width: 900px) {
+    .explorer { flex-direction: row; text-align: left; gap: clamp(40px, 5vw, 96px); }
+    .panels { flex: 0 1 520px; justify-items: start; }
+    .panel { align-items: flex-start; }
+    .stage, :global(.js) .stage { flex: 1 1 0; width: auto; min-width: 0; margin-top: 0; }
+  }
+
   /* no JS: panels in flow, one after another; mark fully lit */
   .panels { gap: 72px; }
   .explorer:not(.is-live) .stage :global(.mark [data-mark-part]) { opacity: 1; }
