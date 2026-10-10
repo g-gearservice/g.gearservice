@@ -1,10 +1,14 @@
 ---
-// Pinned hero, played as scenes (motion.ts sets data-scene from scroll; motion.css transitions between them):
+// Pinned hero: a scroll-scrubbed intro (the wordmark lifts the lockup to the centre, rises off alone, the symbol zooms),
+// then scenes (motion.ts sets data-scene from scroll; motion.css transitions between them):
 //   0 lockup · 1 arcs part, statement in the lens · 2 the statement's body takes its place · 3 arcs rejoin, "the mark is the team."
 //   4/5/6 top arc, lens, bottom arc lit
-// The two halves (wordmark + top arc / bottom arc) carry --a / --p; the split Mark on top holds the per-part highlights.
+// The two halves (wordmark + top arc / bottom arc) carry --p (the logo --a / --z); one Mark per part on top holds its highlight
+// (a whole <svg> each, so its fade is a composited opacity, not a repaint of the zoomed, masked mark).
 import textSvg from '../../SVG/black-text.svg?raw';
-// wordmark: SVG/black-text.svg verbatim, scaled to sit on the symbol: the g descender touches the top arc (y 368.96)
+// wordmark: SVG/black-text.svg verbatim, sized to the top arc's outer edges (x 103.09 → 977.62: the strands ± half the 24
+// stroke) with the g descender standing on the arc's tips (y 368.96). Text box in the asset: x 12.72 → 887.28, bottom 145.79,
+// so scale = 874.53 / 874.56 ≈ 1, translate = (103.09 - 12.72, 368.96 - 145.79)
 const textPaths = [...textSvg.matchAll(/ d="([^"]+)"/g)].map((m) => m[1]);
 import Mark from './Mark.astro';
 import { statement, anatomy } from '../data/content';
@@ -16,14 +20,14 @@ import { statement, anatomy } from '../data/content';
       <h1 class="sr">g.gearservice</h1>
       <div class="logo" data-hero-logo>
         <svg viewBox="103 227 875 589" class="half half--top" aria-hidden="true" data-mark data-lit="all">
-          <g data-wordmark style="fill:var(--mark)"><g transform="translate(90.42 228.27) scale(0.965)">{textPaths.map((d, i) => <path d={d} data-letter style={`--i:${i}`} />)}</g></g>
+          <g data-wordmark style="fill:var(--mark)"><g transform="translate(90.37 223.17)">{textPaths.map((d, i) => <path d={d} data-letter style={`--i:${i}`} />)}</g></g>
           <g class="mk" data-mark-lit style="stroke:var(--mark)"><use href="#mark-top" /></g>
         </svg>
         <svg viewBox="103 227 875 589" class="half half--bot" aria-hidden="true" data-mark data-lit="all">
           <g class="mk" data-mark-lit style="stroke:var(--mark)"><use href="#mark-bot" /></g>
         </svg>
-        <Mark lit="none" split viewBox="103 227 875 589" class="half parts" />
-        <h2 class="lens-line" data-lens-line>{statement.title[0]}<br />{statement.title[1]}</h2>
+        {(["T", "C", "B"] as const).map((p) => <Mark lit={p} viewBox="103 227 875 589" class="half part" />)}
+        <h2 class="lens-line" data-copy="1">{statement.title[0]}<br />{statement.title[1]}</h2>
         <p class="lens-body" data-copy="2">{statement.body}</p>
         <div class="copy" data-copy="3">
           <p class="k">{anatomy.eyebrow}</p>
@@ -44,7 +48,8 @@ import { statement, anatomy } from '../data/content';
   .anchor { position: absolute; top: 0; }
   /* static (no JS): the parted state, with room above and below for the moved halves (50% of the lockup height) */
   .logo { position: relative; aspect-ratio: 875 / 589; margin: calc(50% * 589 / 875) auto calc(50% * 589 / 875 + 48px); container-type: inline-size; }
-  .half { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  /* :global — the .part overlays come from <Mark>, whose svg carries no scope attribute */
+  .logo :global(.half) { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   /* centred in the lens: y 591.5 of the 227-816 lockup */
   .lens-line {
     position: absolute; inset-inline: 0; top: 61.9%; translate: 0 -50%;
@@ -73,5 +78,5 @@ import { statement, anatomy } from '../data/content';
     .copy .b { position: absolute; left: 50%; top: calc(50% + 25.6cqw + 24px); translate: -50% 0; width: min(100cqw, 320px); }
   }
   /* no JS: scenes never run, so the anatomy captions stay out of the static (parted) lockup */
-  :global(html:not(.js)) .copy, :global(html:not(.js)) .parts { display: none; }
+  :global(html:not(.js)) .copy, :global(html:not(.js) .part) { display: none; }
 </style>

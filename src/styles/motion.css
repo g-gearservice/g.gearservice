@@ -14,7 +14,7 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 }
 [data-section=hero] [data-hero-logo] [data-mark-lit] { animation: fade-in 700ms var(--ease-out) 240ms both; }
 /* whole logo rises from below out of a blur; the letters stagger inside it */
-[data-section=hero] [data-hero-logo] { animation: blur-up 1100ms var(--ease-out) both; }
+[data-section=hero] [data-hero-logo] { animation: blur-up 1100ms var(--ease-out) backwards; } /* not `both`: a held filter: blur(0) keeps the zooming logo on a filter surface */
 [data-hero-chrome] { animation: fade-in 300ms var(--ease-out) 160ms both; }
 @keyframes letter-in { from { opacity: 0; transform: translateY(14%); } to { opacity: 1; transform: none; } }
 @keyframes blur-up { from { opacity: 0; transform: translateY(48px); filter: blur(16px); } to { opacity: 1; transform: none; filter: blur(0); } }
@@ -26,37 +26,30 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   }
 }
 
-/* ---- Hero: pinned scenes. motion.ts sets [data-scene] 0-5 from scroll; each change plays as a timed transition, not a scrub.
-   --w (0→1) the wordmark rises away with the header: in scene 0 it follows html.nav-up (same scroll-speed duration, --nav-dur).
-   --a (0→1) then the lockup glides up and zooms until the symbol's arc tips touch the viewport's top and bottom
-       (also in scene 0 once the nav is up).
-   --p (0→1) the top arc goes up, the bottom arc down, and the statement focuses in between.
-   --q (0→1) the statement steps back (blurs out) for its body.
+/* ---- Hero: pinned. First an intro scrubbed 1:1 by scroll (motion.ts, --intro px of it), then scenes.
+   --a (0→1) the wordmark pulls the whole lockup up until the symbol sits at the vertical centre;
+       then the wordmark rises on alone (motion.ts moves it), then --z (0→1) zooms the symbol until its arc tips touch the
+       viewport's top and bottom. Both are set on the logo only (inherits: false: no restyle of the SVGs under it).
+   Scenes: motion.ts sets [data-scene] 0-6 from the scroll past the intro; each change plays as a timed transition.
+   --p (0→1) the top arc goes up, the bottom arc down. The statement focuses in once they are open.
    0 lockup · 1 parted + statement · 2 parted + body · 3 rejoined + "the mark is the team." · 4 top arc · 5 lens · 6 bottom arc
-   Static state (no JS) is --w/--a: 0, --p: 1 with room laid out in Hero.astro. ---- */
-@property --w { syntax: '<number>'; inherits: true; initial-value: 0; }
-@property --a { syntax: '<number>'; inherits: true; initial-value: 0; }
+   Static state (no JS) is --a/--z: 0, --p: 1 with room laid out in Hero.astro. ---- */
+@property --a { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --z { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --p { syntax: '<number>'; inherits: true; initial-value: 1; }
-@property --q { syntax: '<number>'; inherits: true; initial-value: 0; }
 /* symbol centre is y 592 of the 227-816 lockup = 62% of the box: lift the box 12% (+36px, half the header padding) to centre it.
    Before the lift, a lockup taller than the room under the header hangs from the top (wordmark in view): --drop = half the overflow */
 [data-section=hero] [data-hero-logo] { translate: 0 calc((1 - var(--a)) * var(--drop, 0px) + var(--a) * (-12% - 36px)); }
-[data-section=hero] [data-wordmark] { transform: translateY(calc(var(--w) * -260px)); opacity: calc(1 - var(--w) * 1.4); } /* SVG user units */
 [data-section=hero] .half--top { transform: translateY(calc(var(--p) * -50%)); }
 [data-section=hero] .half--bot { transform: translateY(calc(var(--p) * 50%)); }
-/* statement waits for the arcs to clear the lens (p .45), then focuses in; --q blurs it back out */
-[data-lens-line] {
-  --t: calc(clamp(0, (var(--p) - 0.45) / 0.55, 1) * (1 - var(--q)));
-  opacity: var(--t); scale: calc(0.94 + var(--t) * 0.06); filter: blur(calc((1 - var(--t)) * 8px));
-}
 .js [data-section=hero] {
   --step: 70svh; /* scroll per scene */
-  height: calc(100svh + 6 * var(--step)); margin-top: -72px; /* under the header so the pin starts at scroll 0 */
+  height: calc(100svh + var(--intro, 0px) + 6 * var(--step)); margin-top: -72px; /* under the header so the pin starts at scroll 0 */
 }
-.js [data-section=hero] #anatomy { top: calc(3 * var(--step) + 72px); } /* + the header's 72px: the anchor offset takes it back off */
+.js [data-section=hero] #anatomy { top: calc(var(--intro, 0px) + 2.5 * var(--step) + 72px); } /* mid scene 3 */ /* + the header's 72px: the anchor offset takes it back off */
 .js [data-hero-stage] {
   position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center;
-  --p: 0; transition: --w var(--nav-dur, .35s) var(--ease-out), --a 1000ms var(--ease-out), --p 1000ms var(--ease-out), --q 500ms var(--ease-out);
+  --p: 0;
 }
 .js [data-hero-stage] > .wrap { width: 100%; } /* auto margins would shrink it to the logo, which (container-type) has no content width */
 .js [data-section=hero] [data-hero-logo] {
@@ -66,32 +59,31 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   margin: 0 auto; width: var(--lw);
   /* zoom about the symbol's centre (a transform: no layout per frame); --zoom (motion.ts) = viewport height / symbol height,
      portrait: viewport width / logo width. The symbol is 875 x 447, so landscape sides bleed past the screen. */
-  transform-origin: 50% 62%; scale: calc(1 + var(--a) * (var(--zoom, 1) - 1));
+  transform-origin: 50% 62%; scale: calc(1 + var(--z) * (var(--zoom, 1) - 1));
 }
-.js [data-scene="1"] { --w: 1; --a: 1; --p: 1; }
-.js [data-scene="2"] { --w: 1; --a: 1; --p: 1; --q: 1; }
-.js :is([data-scene="3"], [data-scene="4"], [data-scene="5"], [data-scene="6"]) { --w: 1; --a: 1; }
-/* the first scroll down lifts the wordmark with the nav, then the symbol glides to the vertical centre (still closed: parting is scene 1) */
-.js.nav-up [data-hero-stage][data-scene="0"] { --w: 1; --a: 1; transition-delay: 0s, calc(var(--nav-dur, .35s) * .6), 0s; }
-/* captions focus in out of a blur; on the rejoin the arcs close first, then the anatomy caption comes in */
+/* --p flips per scene; the halves' transform built from it transitions, so the compositor plays the travel (transitioning
+   the registered var itself re-styled the whole stage every frame - the arc split stuttered) */
+.js :is([data-scene="1"], [data-scene="2"]) { --p: 1; }
+/* captions fade and grow in; on the rejoin the arcs close first, then the anatomy caption comes in */
 .js [data-hero-stage] [data-copy] {
-  opacity: 0; filter: blur(8px); scale: .96;
-  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out), scale 300ms var(--ease-out);
+  opacity: 0; scale: .96;
+  transition: opacity 300ms var(--ease-out), scale 300ms var(--ease-out);
 }
-.js [data-scene="2"] [data-copy="2"], .js [data-scene="3"] [data-copy="3"], .js [data-scene="4"] [data-copy="4"], .js [data-scene="5"] [data-copy="5"], .js [data-scene="6"] [data-copy="6"] {
-  opacity: 1; filter: none; scale: 1;
+.js [data-scene="1"] [data-copy="1"], .js [data-scene="2"] [data-copy="2"], .js [data-scene="3"] [data-copy="3"], .js [data-scene="4"] [data-copy="4"], .js [data-scene="5"] [data-copy="5"], .js [data-scene="6"] [data-copy="6"] {
+  opacity: 1; scale: 1;
   transition-duration: 600ms; transition-delay: 250ms; /* the outgoing caption clears first */
 }
 .js [data-hero-stage][data-scene="3"] [data-copy="3"] { transition-delay: 600ms; } /* waits for the arcs to meet */
+.js [data-hero-stage][data-scene="1"] [data-copy="1"] { transition-delay: 450ms; } /* waits for the arcs to open */
 /* highlight: the whole mark dims, the scene's part lights */
-.js [data-hero-stage] svg.half:not(.parts) { transition: opacity 600ms var(--ease-out); }
-.js :is([data-scene="4"], [data-scene="5"], [data-scene="6"]) svg.half:not(.parts) { opacity: var(--lit-dim); }
-.js [data-hero-stage] [data-mark-part] { transition: opacity 600ms var(--ease-out); }
-.js [data-scene="4"] [data-mark-part=T], .js [data-scene="5"] [data-mark-part=C], .js [data-scene="6"] [data-mark-part=B] { opacity: 1; }
+.js [data-hero-stage] svg.half:not(.part) { transition: transform 1000ms var(--ease-out), opacity 600ms var(--ease-out); }
+.js :is([data-scene="4"], [data-scene="5"], [data-scene="6"]) svg.half:not(.part) { opacity: var(--lit-dim); }
+.js [data-hero-stage] svg.part { opacity: 0; transition: opacity 600ms var(--ease-out); }
+.js [data-scene="4"] svg.part[data-lit=T], .js [data-scene="5"] svg.part[data-lit=C], .js [data-scene="6"] svg.part[data-lit=B] { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   /* scenes still change, without the travel: positions jump, captions and highlights cross-fade */
-  .js [data-hero-stage] { transition: none; }
-  .js [data-hero-stage] [data-copy] { filter: none; scale: none; }
+  .js [data-hero-stage][data-scene] svg.half { transition-property: opacity; }
+  .js [data-hero-stage] [data-copy] { scale: none; }
 }
 
 /* ---- Scroll reveal (one-shot; motion.ts adds .is-in) ---- */

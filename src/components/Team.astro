@@ -1,9 +1,16 @@
 ---
+// One centred mark, one text panel, pinned and played as scenes: scroll picks the team (alpha → pistolinkr → delta, one
+// --step each), the panel and the lit part transition to it. No JS: the three panels simply stack in flow, all readable.
 import Mark from './Mark.astro';
 import Glyph from './Glyph.astro';
 import Eyebrow from './Eyebrow.astro';
 import { team } from '../data/content';
-const { alpha, lens, delta } = team;
+
+const teams = [
+  { id: 'alpha', part: 'T', ...team.alpha, items: team.alpha.items.map((i) => ({ term: i.term, note: i.note as string | undefined })) },
+  { id: 'lens', part: 'C', ...team.lens, items: team.lens.items.map((i) => ({ term: i, note: undefined as string | undefined })) },
+  { id: 'delta', part: 'B', ...team.delta, items: team.delta.items.map((i) => ({ term: i.term, note: i.note as string | undefined })) },
+];
 ---
 <section id="team" data-section="team" class="team">
   <div class="wrap head">
@@ -11,65 +18,85 @@ const { alpha, lens, delta } = team;
     <h2 class="h2" data-reveal="display">{team.title}</h2>
   </div>
 
-  <!-- alpha (top arc): shape left, text right -->
-  <div id="alpha" class="row row--alpha" data-team="alpha">
-    <Mark lit="T" base="var(--dim)" class="shape" reveal="part" from="top" />
-    <div class="text">
-      <span class="label" data-reveal>{alpha.kicker}</span>
-      <h3 class="name" data-reveal="display">{alpha.name}</h3>
-      <p class="body" data-reveal>{alpha.body}</p>
-      <ul role="list" class="items">
-        {alpha.items.map((i) => (
-          <li data-reveal-item><Glyph /><span>{i.term} <span class="soft">· {i.note}</span></span></li>
+  <div class="pin" data-team-pin>
+    <div class="wrap explorer" data-team-explorer data-show="T">
+      <div class="panels">
+        {teams.map((t) => (
+          <div id={t.id} class="panel" data-panel={t.part}>
+            <span class="label">{t.kicker}</span>
+            <h3 class="name">{t.name}</h3>
+            <p class="body">{t.body}</p>
+            <ul role="list" class="items">
+              {t.items.map((i) => <li><Glyph /><span>{i.term}{i.note && <span class="soft"> · {i.note}</span>}</span></li>)}
+            </ul>
+          </div>
         ))}
-      </ul>
-    </div>
-  </div>
+      </div>
 
-  <!-- pistolinkr: lens lit, centered, mark overflows below into the next row -->
-  <div id="lens" class="lens" data-team="lens">
-    <div class="wrap lens__in">
-      <span class="label" data-reveal>{lens.kicker}</span>
-      <h3 class="name" data-reveal="display">{lens.name}</h3>
-      <p class="body" data-reveal>{lens.body}</p>
-      <ul role="list" class="items items--c">
-        {lens.items.map((i) => <li data-reveal-item><Glyph />{i}</li>)}
-      </ul>
-      <Mark lit="C" base="var(--dim)" class="lens__shape" reveal="part" from="center" />
-    </div>
-  </div>
+      <div class="stage">
+        <Mark lit="none" base="var(--dim)" split class="mark" />
+      </div>
 
-  <!-- delta (bottom arc): text left, shape right (mirror of alpha) -->
-  <div id="delta" class="row row--delta" data-team="delta">
-    <div class="text">
-      <span class="label" data-reveal>{delta.kicker}</span>
-      <h3 class="name" data-reveal="display">{delta.name}</h3>
-      <p class="body" data-reveal>{delta.body}</p>
-      <ul role="list" class="items">
-        {delta.items.map((i) => (
-          <li data-reveal-item><Glyph /><span>{i.term} <span class="soft">· {i.note}</span></span></li>
-        ))}
-      </ul>
     </div>
-    <Mark lit="B" base="var(--dim)" class="shape" reveal="part" from="bottom" />
   </div>
 </section>
+
+<script>
+  // scene = which third of the pin the scroll is in; motion is CSS transitions on [data-show]
+  const pin = document.querySelector<HTMLElement>('[data-team-pin]');
+  const root = pin?.querySelector<HTMLElement>('[data-team-explorer]');
+  if (pin && root) {
+    const parts = ['T', 'C', 'B'];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const scene = () => {
+      const q = -pin.getBoundingClientRect().top / (pin.offsetHeight - innerHeight); // 0 → 1 over the pin
+      const p = parts[Math.min(Math.max(Math.round(q * 2), 0), 2)];
+      if (p === root.dataset.show) return;
+      root.dataset.show = p;
+      for (const el of panels) el.inert = el.dataset.panel !== p; // hidden panels leave the tab order and the a11y tree
+    };
+    root.classList.add('is-live');
+    for (const el of panels) el.inert = el.dataset.panel !== root.dataset.show;
+    addEventListener('scroll', scene, { passive: true });
+    addEventListener('resize', scene);
+    scene();
+  }
+</script>
+
 <style>
-  .team { border-top: 1px solid var(--line); overflow: hidden; }
+  .team { border-top: 1px solid var(--line); overflow: clip; } /* clip, not hidden: hidden would make it the scroller and unpin the sticky stage */
   .head { padding-top: clamp(72px, 9vw, 128px); display: flex; flex-direction: column; gap: 20px; }
-  .row { max-width: var(--max); margin: 0 auto; padding-inline: var(--gutter); display: flex; flex-wrap: wrap; align-items: center; gap: 48px clamp(32px, 6vw, 96px); }
-  .row--alpha { margin-top: clamp(48px, 6vw, 88px); padding-block: clamp(40px, 5vw, 72px); border-top: 1px solid var(--line); }
-  .row--delta { padding-top: calc(7vw + clamp(40px, 5vw, 72px)); padding-bottom: clamp(72px, 9vw, 128px); }
-  .row :global(.shape) { flex: 0 1 46%; min-width: min(100%, 320px); height: auto; display: block; }
-  .text { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
-  .body { max-width: 520px; font-size: 17px; line-height: 1.75; }
-  .items { display: flex; flex-direction: column; gap: 12px; font-size: 17px; line-height: 1.5; }
+  .explorer {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding-top: clamp(48px, 6vw, 88px); padding-bottom: clamp(72px, 9vw, 128px);
+  }
+  /* pinned: one screen holds the panel and the mark, the scroll runs 2 --steps past it (alpha, pistolinkr, delta) */
+  :global(.js) .pin { --step: 70svh; height: calc(100svh + 2 * var(--step)); }
+  :global(.js) .explorer { position: sticky; top: 0; height: 100svh; justify-content: center; padding-block: 72px 32px; }
+  .panels { display: grid; width: 100%; justify-items: center; }
+  .panel { display: flex; flex-direction: column; align-items: center; gap: 24px; max-width: 600px; }
+  .body { font-size: 17px; line-height: 1.75; margin: 0; }
+  .items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; font-size: 17px; line-height: 1.5; text-align: left; }
   .items li { display: flex; align-items: center; gap: 14px; }
 
-  .lens { border-top: 1px solid var(--line); position: relative; z-index: 1; }
-  .lens__in { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; align-items: center; gap: 24px; }
-  .lens .name { text-align: center; }
-  .lens .body { max-width: 560px; }
-  .items--c { align-self: center; }
-  .lens :global(.lens__shape) { display: block; width: min(100%, 860px); height: auto; margin-top: clamp(24px, 4vw, 56px); margin-bottom: -7vw; }
+  .stage { width: min(100%, 860px); margin-top: clamp(32px, 4vw, 56px); }
+  /* pinned: the mark takes what the screen has left under the panel (~400px of text + gaps) */
+  :global(.js) .stage { width: min(100%, 860px, (100svh - 520px) * 875 / 447); min-width: min(100%, 280px); }
+  .stage :global(.mark) { display: block; width: 100%; height: auto; }
+
+  /* no JS: panels in flow, one after another; mark fully lit */
+  .panels { gap: 72px; }
+  .explorer:not(.is-live) .stage :global(.mark [data-mark-part]) { opacity: 1; }
+
+  /* live: panels share one cell (height = the tallest, no jump), the shown one focuses in out of a blur */
+  .is-live .panels { gap: 0; }
+  .is-live .panel { grid-area: 1 / 1; opacity: 0; filter: blur(8px); scale: .98; transition: opacity 250ms var(--ease-out), filter 250ms var(--ease-out), scale 250ms var(--ease-out); }
+  .is-live .stage :global(.mark [data-mark-part]) { transition: opacity 300ms var(--ease-out); }
+  [data-show=T] [data-panel=T], [data-show=C] [data-panel=C], [data-show=B] [data-panel=B] {
+    opacity: 1; filter: none; scale: 1; transition-duration: 450ms; transition-delay: 80ms;
+  }
+  [data-show=T] .stage :global(.mark [data-mark-part=T]), [data-show=C] .stage :global(.mark [data-mark-part=C]), [data-show=B] .stage :global(.mark [data-mark-part=B]) { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .is-live .panel { filter: none; scale: none; }
+  }
 </style>

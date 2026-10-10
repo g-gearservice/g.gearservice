@@ -1,0 +1,4 @@
+{
+  "version": "0.0.1",
+  "configurations": [{ "name": "dev", "runtimeExecutable": "node_modules/.bin/astro", "runtimeArgs": ["dev", "--host"], "port": 4321 }]
+}

@@ -40,25 +40,88 @@ const io = new IntersectionObserver(
     let i = 0;
     for (const e of entries) {
       if (!e.isIntersecting) continue;
-      const t = e.target as HTMLElement;
+      const t = (watched.get(e.target) ?? e.target) as HTMLElement;
       t.style.setProperty('--i', String(Math.min(i++, 5))); // 60ms steps, capped
       t.classList.add('is-in');
-      io.unobserve(t);
+      io.unobserve(e.target);
     }
   },
   { rootMargin: '0px 0px -8% 0px', threshold: 0.01 },
 );
-document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => io.observe(el));
+// clip-path reveals (part / rise) start clipped to nothing, and a zero-area target never intersects: watch the parent for them
+const watched = new Map<Element, Element>();
+document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => {
+  const box = el.matches('[data-reveal=part], [data-reveal=rise]') ? el.parentElement! : el;
+  watched.set(box, el);
+  io.observe(box);
+});
 root.classList.add('motion-ready');
 
-// Hero scenes: scroll only picks the scene (0-6, one per --step of the pin); motion.css transitions between them.
+// Footer overscroll: pushing on past the page end lifts the bottom arc a little - eased so it gives less the harder you
+// push (1 - e^(-pull/400)) - and lets it settle once the push stops (160ms without wheel / touch movement).
+const foot = document.querySelector<HTMLElement>('[data-footer-mark]');
+if (foot && !reduce) {
+  let pull = 0;
+  let idle = 0;
+  let ty: number | null = null;
+  const atEnd = () => innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+  const push = (d: number) => {
+    if (d <= 0 || !atEnd()) return;
+    pull += d;
+    foot.dataset.pulling = '';
+    foot.style.setProperty('--lift', (1 - Math.exp(-pull / 400)).toFixed(3));
+    clearTimeout(idle);
+    idle = setTimeout(() => {
+      pull = 0;
+      delete foot.dataset.pulling;
+      foot.style.setProperty('--lift', '0');
+    }, 160);
+  };
+  addEventListener('wheel', (e) => push(e.deltaY), { passive: true });
+  addEventListener('touchstart', (e) => { ty = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => {
+    if (ty === null) return;
+    const y = e.touches[0].clientY;
+    push(ty - y); // finger moving up = pushing the page on down
+    ty = y;
+  }, { passive: true });
+  addEventListener('touchend', () => { ty = null; }, { passive: true });
+}
+
+// Hero: the first `intro` px of the pin scrub the lockup 1:1 - the wordmark pulls the symbol up to the vertical centre (d1),
+// rises on alone off the screen (d2), then the symbol zooms (d3). Past the intro, scroll only picks the scene
+// (1-6, one per --step, scene 1 right as the zoom ends); motion.css transitions between them.
 const hero = document.querySelector<HTMLElement>('[data-hero-stage]');
 if (hero) {
   const sec = hero.parentElement!;
   const logo = hero.querySelector<HTMLElement>('[data-hero-logo]')!;
+  const word = hero.querySelector<SVGGElement>('[data-wordmark]')!;
+  let d1 = 1, d2 = 1, d3 = 1, units = 1; // px of scroll per phase; SVG units per px of the unzoomed logo
+  const clamp = (x: number) => Math.min(Math.max(x, 0), 1);
+  const measure = () => {
+    word.style.transform = '';
+    logo.style.setProperty('--z', '0');
+    logo.style.setProperty('--a', '0');
+    const top0 = logo.getBoundingClientRect().top;
+    logo.style.setProperty('--a', '1');
+    d1 = Math.max(top0 - logo.getBoundingClientRect().top, 1);
+    d2 = Math.max(word.getBoundingClientRect().bottom, 1); // centred: wordmark bottom → screen top
+    d3 = innerHeight * 0.3; // ponytail: zoom scroll length picked by eye, tune here
+    units = 875 / logo.offsetWidth;
+    sec.style.setProperty('--intro', `${d1 + d2 + d3}px`);
+  };
   const scene = () => {
-    const q = -sec.getBoundingClientRect().top / (sec.offsetHeight - innerHeight); // 0 → 1 over the pin
-    hero.dataset.scene = String(Math.min(Math.max(Math.round(q * 6), 0), 6));
+    const s = -sec.getBoundingClientRect().top;
+    const w = clamp((s - d1) / d2);
+    logo.style.setProperty('--a', clamp(s / d1).toFixed(4));
+    logo.style.setProperty('--z', clamp((s - d1 - d2) / d3).toFixed(4));
+    word.style.transform = `translateY(${(-w * d2 * units).toFixed(2)}px)`; // SVG user units
+    word.style.opacity = String(1 - w);
+    // the scroll that finishes the zoom starts scene 1 (the arcs part); then one --step per scene
+    const step = (sec.offsetHeight - innerHeight - d1 - d2 - d3) / 6;
+    const past = s - d1 - d2 - d3;
+    const n = String(past <= 0 ? 0 : Math.min(1 + Math.floor(past / step), 6));
+    if (hero.dataset.scene !== n) hero.dataset.scene = n; // a same-value write still invalidates style, every scroll frame
   };
   // focus zoom: symbol = 447 of the logo's 875 units tall; landscape fills the height, portrait the width
   const zoom = () => {
@@ -66,7 +129,8 @@ if (hero) {
     hero.style.setProperty('--zoom', String(Math.max(z, 1)));
   };
   addEventListener('scroll', scene, { passive: true });
-  addEventListener('resize', () => { zoom(); scene(); });
+  addEventListener('resize', () => { zoom(); measure(); scene(); });
   zoom();
+  measure();
   scene();
 }
