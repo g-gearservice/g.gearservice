@@ -101,7 +101,7 @@ import { work } from '../data/content';
   /* Apple's continuous corners where the browser can draw them (corner-shape, Chromium 139+); a squircle reads smaller
      than a round arc of the same radius, so it gets a bigger one. Elsewhere the plain 20px round corner stays */
   @supports (corner-shape: squircle) {
-    .embed__screen, iframe { border-radius: 32px; corner-shape: squircle; } /* ponytail: 32px picked by eye, tune here */
+    .embed__screen, iframe { border-radius: 60px; corner-shape: squircle; }
   }
   /* idle: the loaded site sits blurred under the play button (scaled so the blur's soft edge stays outside the clip) */
   .embed__screen iframe { transition: filter 400ms var(--ease-out), scale 400ms var(--ease-out); }
