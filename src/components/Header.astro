@@ -6,10 +6,13 @@ import { nav } from '../data/content';
 <div class="blur bot" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="blur side lft" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="blur side rgt" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-{[false, true].map((ghost) => (
+{[0, 1, 2, 3].map((layer) => {
   /* ghost: an inert copy that paints only the text links, difference-blended against the page.
-     The real header is sticky (its own stacking context), so a blend inside it can't see the page. */
-  <header class:list={{ ghost }} aria-hidden={ghost ? 'true' : undefined} inert={ghost}>
+     The real header is sticky (its own stacking context), so a blend inside it can't see the page.
+     Ghosts 2 and 3 are only for red-black's threshold (see the styles). */
+  const ghost = layer > 0;
+  return (
+  <header class:list={{ ghost }} data-layer={ghost ? layer : undefined} aria-hidden={ghost ? 'true' : undefined} inert={ghost}>
     <div class="wrap bar" data-hero-chrome>
       <a class="home" href="#top" aria-label="g.gearservice, back to top"><Glyph size={26} /></a>
       <nav aria-label={ghost ? undefined : 'Main'}>
@@ -18,7 +21,8 @@ import { nav } from '../data/content';
       </nav>
     </div>
   </header>
-))}
+  );
+})}
 <style>
   /* sticky at top:0 = fixed for a first-child header, but keeps its flow height (Hero sizes against it) */
   header { position: sticky; top: 0; z-index: 10; }
@@ -81,8 +85,17 @@ import { nav } from '../data/content';
   /* --rev: the reverse colour the ghost paints with (white by default, difference-blended) */
   .ghost { --rev: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 11; pointer-events: none; mix-blend-mode: difference; }
   .ghost .home, .ghost nav a:not(.cta) { --fg: var(--rev); color: var(--rev); }
-  /* red-black: plain white too - no blend turns red black and black white at once */
-  :global([data-colorway=red-black]) .ghost { --rev: #fff; mix-blend-mode: normal; }
+  .ghost[data-layer='2'], .ghost[data-layer='3'] { display: none; }
+  /* red-black: black on the red, white only over black. No one blend does that (red and black share G = B = 0), so three
+     stacked ghosts threshold the luminance: gray `color` (= backdrop luminance, red 0.19 / black 0) → white difference
+     (0.81 / 1) → `color-burn` by 0.1 (1 - (1 - b) / 0.1: 0.81 → 0, 1 → 1). The real cta shows through instead. */
+  :global([data-colorway=red-black]) .ghost {
+    &[data-layer] { display: block; }
+    &[data-layer='1'] { --rev: #808080; mix-blend-mode: color; }
+    &[data-layer='3'] { --rev: #1a1a1a; mix-blend-mode: color-burn; }
+    .cta { visibility: hidden; }
+  }
+  :global([data-colorway=red-black]) header:not(.ghost) nav a.cta { background: var(--accent); color: var(--on-accent); }
   /* red-white: no difference blend can turn red ground white (white - red = cyan), so it paints plain white */
   :global([data-colorway=red-mist]) .ghost { --rev: var(--fg); mix-blend-mode: normal; }
   nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
@@ -90,9 +103,9 @@ import { nav } from '../data/content';
      The real pill stays clickable but clear; its hover/press feedback is mirrored onto the ghost. */
   header:not(.ghost) nav a.cta { background: transparent; color: transparent; }
   .ghost nav a.cta { background: var(--rev); color: #000; }
-  :global([data-colorway=red-mist]) .ghost nav a.cta, :global([data-colorway=red-black]) .ghost nav a.cta { color: var(--on-accent); } /* not blended: red label on the white pill */
-  header:has(.cta:hover) + .ghost .cta { opacity: .85; }
-  header:has(.cta:active) + .ghost .cta { transform: scale(.97); }
+  :global([data-colorway=red-mist]) .ghost nav a.cta { color: var(--on-accent); } /* not blended: red label on the white pill */
+  header:has(.cta:hover) ~ .ghost .cta { opacity: .85; }
+  header:has(.cta:active) ~ .ghost .cta { transform: scale(.97); }
   /* 375px: glyph + 4 links must stay on one row (full-size paddings total ~334px of 335px) */
   @media (max-width: 420px) {
     .bar { flex-wrap: nowrap; gap: 0 8px; }

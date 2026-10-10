@@ -3,7 +3,9 @@ import Wordmark from './Wordmark.astro';
 import { footer } from '../data/content';
 ---
 <footer data-section="footer">
-  <div class="wrap">
+  {[1, 2, 3].map((layer) => (
+  /* layers 2 and 3: inert copies, only for red-black's threshold (see the styles) */
+  <div class="wrap" data-layer={layer} aria-hidden={layer > 1 ? 'true' : undefined} inert={layer > 1}>
     <div class="row">
       <span class="copy">© 2026 <span class="brand"><Wordmark /></span></span>
       <nav aria-label="Footer">
@@ -11,6 +13,7 @@ import { footer } from '../data/content';
       </nav>
     </div>
   </div>
+  ))}
   <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border.
        Arcs as two groups so overscrolling past the page end can lift the bottom one (motion.ts → --lift) -->
   <div class="crop">
@@ -29,7 +32,13 @@ import { footer } from '../data/content';
   /* row content in the reverse colour, like the header ghost: --rev difference-blended against the mark behind
      (the blend sits on .wrap: its z-index makes it the stacking context, so a blend on .row would see nothing) */
   .wrap { --rev: #fff; mix-blend-mode: difference; }
-  :global([data-colorway=red-black]) .wrap { --rev: #fff; mix-blend-mode: normal; } /* no blend turns red black and black white at once: plain white */
+  .wrap[data-layer='2'], .wrap[data-layer='3'] { display: none; pointer-events: none; }
+  /* red-black: black on the red, white only over black - the header ghost's three-layer luminance threshold */
+  :global([data-colorway=red-black]) .wrap {
+    &[data-layer] { display: block; }
+    &[data-layer='1'] { --rev: #808080; mix-blend-mode: color; }
+    &[data-layer='3'] { --rev: #1a1a1a; mix-blend-mode: color-burn; }
+  }
   :global([data-colorway=red-mist]) .wrap { --rev: var(--fg); mix-blend-mode: normal; }
   .row { --fg: var(--rev); --soft: var(--rev); color: var(--rev); }
   .copy { padding-block: 12px; }
