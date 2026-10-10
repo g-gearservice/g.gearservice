@@ -20,11 +20,7 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   <div class="crop">
     <div class="end" aria-hidden="true" data-reveal="rise" data-footer-mark>
       <svg viewBox="103 369 875 447"><g class="mk" style="stroke:var(--mark)"><use href="#mark-top" /></g></svg>
-      <!-- the bottom arc is the Grok bot peeking up: its eyes sit in the hollow under the crown, drawn by bloub/eyes.js (motion.ts) -->
-      <svg viewBox="103 369 875 447" class="arc-bot">
-        <g class="mk" style="stroke:var(--mark)"><use href="#mark-bot" /></g>
-        <g transform="translate(540 450) scale(1 -1)" style="fill:var(--mark)" data-bot-eyes /> <!-- flipped upside down; pivot moved so the eyes stay put -->
-      </svg>
+      <svg viewBox="103 369 875 447" class="arc-bot"><g class="mk" style="stroke:var(--mark)"><use href="#mark-bot" /></g></svg>
     </div>
   </div>
 </footer>

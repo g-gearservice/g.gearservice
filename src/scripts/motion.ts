@@ -80,24 +80,6 @@ if (foot && copy && !reduce) {
   measure();
 }
 
-// Footer bot: the eyes under the bottom arc (bloub/eyes.js) follow the pointer, blink and wander, doze off when left alone.
-// Only drawn while the footer is on screen - each frame repaints the arc's SVG.
-const eyesHost = document.querySelector<SVGGElement>('[data-bot-eyes]');
-if (eyesHost) {
-  import('./bloub/eyes.js').then(({ mountEyes }) => {
-    const eyes = mountEyes(eyesHost, { calm: reduce });
-    const svg = eyesHost.ownerSVGElement!;
-    new IntersectionObserver(([e]) => (e.isIntersecting ? eyes.start() : eyes.stop())).observe(svg);
-    addEventListener('pointermove', (e) => {
-      eyes.poke();
-      const m = eyesHost.getScreenCTM();
-      if (m) eyes.lookToward(e.clientX - m.e, e.clientY - m.f, svg.getBoundingClientRect().width / 3);
-    }, { passive: true });
-    document.documentElement.addEventListener('pointerleave', () => eyes.lookAway());
-    addEventListener('scroll', () => eyes.poke(), { passive: true });
-  });
-}
-
 // Hero: the first `intro` px of the pin scrub the lockup 1:1 - the wordmark pulls the symbol up to the vertical centre (d1),
 // rises on alone off the screen (d2), then the symbol zooms (d3). Past the intro, scroll only picks the scene
 // (1-6, one per --step, scene 1 right as the zoom ends); motion.css transitions between them.
