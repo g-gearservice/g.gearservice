@@ -11,7 +11,7 @@ import { work } from '../data/content';
     </div>
     <ul class="list" role="list">
       {work.items.map((w) => (
-        <li data-reveal-item>
+        <li data-reveal-item data-embed={w.embed ? w.href : undefined}>
           <div class="title">
             {w.href
               ? <a href={w.href} rel="noopener">{w.name} <span aria-hidden="true">↗</span></a>
@@ -19,13 +19,42 @@ import { work } from '../data/content';
           </div>
           <div class="meta">
             <span class="desc">{w.desc}</span>
-            <div class="statuses">{w.statuses.map((s) => <Status kind={s.kind} label={s.label} />)}</div>
+            <div class="statuses">{w.statuses.map((s) => w.embed && s.label === 'live'
+              ? <button type="button" class="live" aria-expanded="false" aria-controls={`embed-${w.name}`} data-live><span class="dot" aria-hidden="true"></span>{s.label}</button>
+              : <Status kind={s.kind} label={s.label} />)}</div>
           </div>
+          {w.embed && (
+            <div class="embed" id={`embed-${w.name}`} inert>
+              <div class="embed__clip">
+                <div class="embed__frame">
+                  <iframe title={`${w.name}, live`} data-src={w.href} referrerpolicy="no-referrer" loading="lazy"></iframe>
+                  <a class="embed__out" href={w.href} rel="noopener">open in a new tab ↗</a>
+                </div>
+              </div>
+            </div>
+          )}
         </li>
       ))}
     </ul>
   </div>
 </section>
+<script>
+  // the live button opens the embed under its row: the grid row grows (pushing the rows below, and their border, down)
+  // while the frame rises into place. The iframe loads on first open.
+  document.querySelectorAll<HTMLElement>('[data-embed]').forEach((li) => {
+    const btn = li.querySelector<HTMLButtonElement>('[data-live]');
+    const box = li.querySelector<HTMLElement>('.embed');
+    const frame = li.querySelector<HTMLIFrameElement>('iframe');
+    if (!btn || !box || !frame) return;
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') !== 'true';
+      if (open && !frame.src) frame.src = frame.dataset.src!;
+      btn.setAttribute('aria-expanded', String(open));
+      box.inert = !open;
+      li.classList.toggle('is-open', open);
+    });
+  });
+</script>
 <style>
   .in { padding-block: clamp(56px, 6vw, 96px); display: flex; flex-direction: column; gap: clamp(36px, 4.4vw, 64px); }
   .head { display: flex; flex-direction: column; gap: 20px; }
@@ -36,5 +65,18 @@ import { work } from '../data/content';
   .plain { display: inline-block; font-family: var(--font-display); font-size: clamp(30px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 500; overflow-wrap: anywhere; }
   .meta { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
   .desc { font-size: 17px; line-height: 1.6; }
+  /* live: the nav's contact pill, small */
+  .live { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
+  .live:hover { opacity: .85; }
+  .live:active { transform: scale(.97); transition-duration: 150ms, 100ms; }
+  .live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--on-accent); }
+  .embed { flex: 0 0 100%; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 600ms var(--ease-out); }
+  .is-open .embed { grid-template-rows: 1fr; }
+  .embed__clip { min-height: 0; overflow: hidden; }
+  .embed__frame { display: flex; flex-direction: column; gap: 10px; padding-top: clamp(8px, 1.5vw, 20px); opacity: 0; transform: translateY(48px); transition: opacity 400ms var(--ease-out), transform 600ms var(--ease-out); }
+  .is-open .embed__frame { opacity: 1; transform: none; transition-delay: 80ms; }
+  iframe { display: block; width: 100%; height: clamp(420px, 70svh, 760px); border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
+  .embed__out { align-self: flex-end; font-family: var(--font-label); font-size: 13px; line-height: 1.4; letter-spacing: 0; font-weight: 400; text-decoration: none; color: var(--soft); }
+  @media (prefers-reduced-motion: reduce) { .embed, .embed__frame { transition: none; } }
   .statuses { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 </style>

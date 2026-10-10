@@ -77,11 +77,11 @@ export const work = {
   eyebrow: 'work',
   title: 'things we make.',
   items: [
-    { name: 'regiontype.com', href: 'https://regiontype.com', desc: 'A web game that teaches Seoul place names through typing.', statuses: [{ kind: 'done', label: 'live' }, { kind: 'plan', label: 'marketing prep' }] },
+    { name: 'regiontype.com', href: 'https://regiontype.com', embed: true, desc: 'A web game that teaches Seoul place names through typing.', statuses: [{ kind: 'done', label: 'live' }, { kind: 'plan', label: 'marketing prep' }] },
     { name: 'regiontype for mac', href: '', desc: 'A macOS app.', statuses: [{ kind: 'prog', label: 'in progress' }] },
     { name: 'minimetrotype', href: '', desc: 'A typing game experiment.', statuses: [{ kind: 'exp', label: 'experiment' }] },
     { name: 'reportal', href: '', desc: 'A Chrome extension that restyles the school portal.', statuses: [{ kind: 'exp', label: 'experiment' }] },
-  ] as { name: string; href: string; desc: string; statuses: Status[] }[],
+  ] as { name: string; href: string; embed?: boolean; desc: string; statuses: Status[] }[],
 };
 
 export const log = {
