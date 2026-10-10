@@ -45,7 +45,7 @@ const teams = [
 
 <script>
   // Like the hero wordmark: the first `intro` px scrub 1:1 - the heading pulls the explorer up to the vertical centre (d1),
-  // then rises on alone off the screen (d2). Past the intro, scene = which third of the rest the scroll is in;
+  // then drifts up a little and blurs out (d2). Past the intro, scene = which third of the rest the scroll is in;
   // motion is CSS transitions on [data-show]
   const pin = document.querySelector<HTMLElement>('[data-team-pin]');
   const screen = pin?.querySelector<HTMLElement>('[data-team-screen]');
@@ -53,6 +53,7 @@ const teams = [
   const root = pin?.querySelector<HTMLElement>('[data-team-explorer]');
   if (pin && screen && head && root) {
     const parts = ['T', 'C', 'B'];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
     let d1 = 0, d2 = 1;
     const measure = () => {
@@ -69,7 +70,9 @@ const teams = [
       const s = -pin.getBoundingClientRect().top;
       const w = Math.min(Math.max((s - d1) / d2, 0), 1);
       screen.style.transform = `translateY(${-Math.min(Math.max(s, 0), d1).toFixed(1)}px)`;
-      head.style.transform = `translateY(${(-w * d2).toFixed(1)}px)`;
+      // the heading drifts up a little and blurs out (reduced motion: fade only)
+      head.style.transform = reduce ? '' : `translateY(${(-w * 40).toFixed(1)}px)`;
+      head.style.filter = reduce || w === 0 ? '' : `blur(${(w * 16).toFixed(1)}px)`; // none at rest: no held filter surface
       head.style.opacity = String(1 - w);
       const q = (s - d1 - d2) / (pin.offsetHeight - innerHeight - d1 - d2); // 0 → 1 over the rest of the pin
       const p = parts[Math.min(Math.max(Math.round(q * 2), 0), 2)];
