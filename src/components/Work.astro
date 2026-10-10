@@ -103,7 +103,7 @@ import { work } from '../data/content';
   .embed__screen:not(.is-playing) iframe { filter: blur(4px); scale: 1.02; pointer-events: none; }
   /* the screen-edge blur (Header.astro .blur), run round the inside of the panel: six layers, each one blur strength
      masked to its band of all four edges (four gradients, unioned) */
-  .edge { position: absolute; inset: 0; display: grid; pointer-events: none; --w: 56px; } /* ponytail: band width picked by eye, tune here */
+  .edge { position: absolute; inset: 0; display: grid; pointer-events: none; --w: 134px; } /* ponytail: band width picked by eye, tune here */
   .edge i { grid-area: 1 / 1; border-radius: inherit; --g: #000 var(--m0), transparent var(--m1);
     mask: linear-gradient(to right, var(--g)), linear-gradient(to left, var(--g)), linear-gradient(to bottom, var(--g)), linear-gradient(to top, var(--g)); }
   .edge i:nth-child(1) { backdrop-filter: blur(1px);  --m0: calc(var(--w) * .4); --m1: calc(var(--w) * .6); }
