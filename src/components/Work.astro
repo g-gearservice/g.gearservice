@@ -29,6 +29,7 @@ import { work } from '../data/content';
                 <div class="embed__frame">
                   <div class="embed__screen">
                     <iframe title={`${w.name}, live`} data-src={w.href} referrerpolicy="no-referrer" loading="lazy"></iframe>
+                    <div class="edge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
                     <button type="button" class="ctl ctl--play" data-play><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 10 6 0 12Z" /></svg>play</button>
                     <button type="button" class="ctl ctl--pause" data-pause><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0h3.5v12H0zM6.5 0H10v12H6.5z" /></svg>pause</button>
                   </div>
@@ -100,6 +101,17 @@ import { work } from '../data/content';
   /* idle: the loaded site sits blurred under the play button (scaled so the blur's soft edge stays outside the clip) */
   .embed__screen iframe { transition: filter 400ms var(--ease-out), scale 400ms var(--ease-out); }
   .embed__screen:not(.is-playing) iframe { filter: blur(14px); scale: 1.06; pointer-events: none; }
+  /* the screen-edge blur (Header.astro .blur), run round the inside of the panel: six layers, each one blur strength
+     masked to its band of all four edges (four gradients, unioned) */
+  .edge { position: absolute; inset: 0; display: grid; pointer-events: none; --w: 56px; } /* ponytail: band width picked by eye, tune here */
+  .edge i { grid-area: 1 / 1; border-radius: inherit; --g: #000 var(--m0), transparent var(--m1);
+    mask: linear-gradient(to right, var(--g)), linear-gradient(to left, var(--g)), linear-gradient(to bottom, var(--g)), linear-gradient(to top, var(--g)); }
+  .edge i:nth-child(1) { backdrop-filter: blur(1px);  --m0: calc(var(--w) * .4); --m1: calc(var(--w) * .6); }
+  .edge i:nth-child(2) { backdrop-filter: blur(2px);  --m0: calc(var(--w) * .3); --m1: calc(var(--w) * .5); }
+  .edge i:nth-child(3) { backdrop-filter: blur(4px);  --m0: calc(var(--w) * .2); --m1: calc(var(--w) * .4); }
+  .edge i:nth-child(4) { backdrop-filter: blur(8px);  --m0: calc(var(--w) * .1); --m1: calc(var(--w) * .3); }
+  .edge i:nth-child(5) { backdrop-filter: blur(16px); --m0: 0px; --m1: calc(var(--w) * .2); }
+  .edge i:nth-child(6) { backdrop-filter: blur(32px); --m0: 0px; --m1: calc(var(--w) * .1); }
   /* play / pause: the live pill, bigger; play sits centred on the idle panel, pause in the corner while it runs */
   .ctl { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 17px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
   .ctl:hover { opacity: .85; }
