@@ -29,7 +29,6 @@ import { process } from '../data/content';
   </div>
 </section>
 <style>
-  .process { background: var(--panel); }
   .in { padding-block: clamp(72px, 8vw, 112px); display: flex; flex-direction: column; gap: clamp(40px, 5vw, 72px); }
   .head { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
   .lede { max-width: 560px; }
@@ -41,7 +40,7 @@ import { process } from '../data/content';
   .rule--T { background: var(--t-a); }
   .rule--B { background: var(--t-d); }
   .rule--C { background: var(--t-l); height: 8px; }
-  .hand { position: absolute; left: 0; top: 0; display: flex; padding-right: 10px; background: var(--panel); }
+  .hand { position: absolute; left: 0; top: 0; display: flex; padding-right: 10px; background: var(--bg); } /* masks the rule behind the hand-off glyph: the page ground */
   li :global(.shape) { display: block; width: 100%; max-width: 120px; height: auto; }
   h3 { font-family: var(--font-head); font-size: 24px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 500; }
   .desc { font-size: 16px; line-height: 1.65; color: var(--soft); }
