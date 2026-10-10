@@ -29,7 +29,7 @@ import { footer } from '../data/content';
   /* row content in the reverse colour, like the header ghost: --rev difference-blended against the mark behind
      (the blend sits on .wrap: its z-index makes it the stacking context, so a blend on .row would see nothing) */
   .wrap { --rev: #fff; mix-blend-mode: difference; }
-  :global([data-colorway=red-black]) .wrap { --rev: var(--bg); }
+  :global([data-colorway=red-black]) .wrap { --rev: #fff; mix-blend-mode: normal; } /* no blend turns red black and black white at once: plain white */
   :global([data-colorway=red-mist]) .wrap { --rev: var(--fg); mix-blend-mode: normal; }
   .row { --fg: var(--rev); --soft: var(--rev); color: var(--rev); }
   .copy { padding-block: 12px; }
