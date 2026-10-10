@@ -65,20 +65,6 @@ document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => {
 });
 root.classList.add('motion-ready');
 
-// Footer: reaching the page end lifts the bottom arc and drops the top arc's tips onto the © line (--drop: that text's
-// bottom edge below the mark's top edge); scrolling back up puts both back.
-const foot = document.querySelector<HTMLElement>('[data-footer-mark]');
-const copy = document.querySelector<HTMLElement>('footer .copy .thr');
-if (foot && copy && !reduce) {
-  const update = () => foot.toggleAttribute('data-up', innerHeight + scrollY >= document.documentElement.scrollHeight - 2);
-  const measure = () => {
-    foot.style.setProperty('--drop', `${copy.getBoundingClientRect().bottom - foot.getBoundingClientRect().top}px`);
-    update();
-  };
-  addEventListener('scroll', update, { passive: true });
-  addEventListener('resize', measure, { passive: true });
-  measure();
-}
 
 // Hero: the first `intro` px of the pin scrub the lockup 1:1 - the wordmark pulls the symbol up to the vertical centre (d1),
 // rises on alone off the screen (d2), then the symbol zooms (d3). Past the intro, scroll only picks the scene

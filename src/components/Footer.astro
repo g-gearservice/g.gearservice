@@ -14,13 +14,10 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
       </nav>
     </div>
   </div>
-  <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border.
-       Arcs as two stacked SVGs so reaching the page end can lift the bottom one (motion.ts → data-up) on its own
-       compositor layer - a transform on a <g> inside one SVG repainted the whole mark (and the blend over it) every frame -->
+  <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border -->
   <div class="crop">
-    <div class="end" aria-hidden="true" data-reveal="rise" data-footer-mark>
-      <svg viewBox="103 369 875 447"><g class="mk" style="stroke:var(--mark)"><use href="#mark-top" /></g></svg>
-      <svg viewBox="103 369 875 447" class="arc-bot"><g class="mk" style="stroke:var(--mark)"><use href="#mark-bot" /></g></svg>
+    <div class="end" aria-hidden="true" data-reveal="rise">
+      <svg viewBox="103 369 875 447"><g class="mk" style="stroke:var(--mark)"><use href="#mark-top" /><use href="#mark-bot" /></g></svg>
     </div>
   </div>
 </footer>
@@ -41,11 +38,6 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   nav { display: flex; flex-wrap: wrap; gap: 0 22px; }
   nav a, .ph { color: var(--soft); text-decoration: none; padding-block: 12px; }
   .crop { overflow: hidden; }
-  .end { display: grid; width: 96vw; margin: 0 auto -24.5vw; }
-  .end > svg { grid-area: 1 / 1; display: block; width: 100%; height: auto; }
-  /* at the page end the bottom arc rises 36 units (of 447 = 8.05% of the box) */
-  .end > svg { transition: transform 350ms var(--ease-out); will-change: transform; }
-  .end[data-up] .arc-bot { transform: translateY(-8.05%); }
-  /* at the end the top arc also drops until its tips touch the © line (motion.ts → --drop) */
-  .end[data-up] > svg:first-child { transform: translateY(var(--drop, 0px)); }
+  .end { width: 96vw; margin: 0 auto -24.5vw; }
+  .end > svg { display: block; width: 100%; height: auto; }
 </style>
