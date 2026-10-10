@@ -111,6 +111,9 @@ import { work } from '../data/content';
   .edge { position: absolute; inset: 0; display: grid; pointer-events: none; --w: 134px; } /* ponytail: band width picked by eye, tune here */
   .edge i { grid-area: 1 / 1; border-radius: inherit; --g: #000 var(--m0), transparent var(--m1);
     mask: linear-gradient(to right, var(--g)), linear-gradient(to left, var(--g)), linear-gradient(to bottom, var(--g)), linear-gradient(to top, var(--g)); }
+  /* playing: the band pulls in to a thin rim; --m0/--m1 are registered lengths (global.css), so the edges glide */
+  .is-playing .edge { --w: 40px; } /* ponytail: picked by eye, tune here */
+  .edge i { transition: --m0 400ms var(--ease-out), --m1 400ms var(--ease-out); }
   .edge i:nth-child(1) { backdrop-filter: blur(1px);  --m0: calc(var(--w) * .4); --m1: calc(var(--w) * .6); }
   .edge i:nth-child(2) { backdrop-filter: blur(2px);  --m0: calc(var(--w) * .3); --m1: calc(var(--w) * .5); }
   .edge i:nth-child(3) { backdrop-filter: blur(4px);  --m0: calc(var(--w) * .2); --m1: calc(var(--w) * .4); }
