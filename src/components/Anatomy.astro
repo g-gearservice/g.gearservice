@@ -27,10 +27,11 @@ const [T, C, B] = anatomy.labels;
   </div>
 </section>
 <style>
-  .anatomy { border-top: 1px solid var(--line); overflow: hidden; }
+  /* clip, not hidden: hidden makes a scroll container and the mark's view timeline would track that instead of the page */
+  .anatomy { border-top: 1px solid var(--line); overflow: clip; }
   .head { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; gap: 20px; }
   .lede { max-width: 560px; }
-  .stage { width: 100%; overflow: hidden; padding-top: clamp(32px, 4vw, 56px); }
+  .stage { width: 100%; overflow: clip; padding-top: clamp(32px, 4vw, 56px); }
   .bleed { position: relative; width: 116vw; margin-left: -8vw; }
   .bleed :global(.mark) { display: block; width: 100%; height: auto; }
   /* leaders live on the mark's own box, so % are of the mark (viewBox 103 369 875 447) and they end 56px into the label row */

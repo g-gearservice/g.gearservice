@@ -70,9 +70,10 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
     [data-stage] [data-mark-lit] { opacity: var(--lit-dim); }
     [data-stage] [data-mark-part] { animation: part-on linear both; animation-timeline: --stage; }
     [data-stage] [data-leader], [data-stage] [data-label] { opacity: .5; animation: label-on linear both; animation-timeline: --stage; }
-    [data-mark-part=T], [data-leader=T], [data-label=T] { animation-range: cover 10% cover 26%; }
-    [data-mark-part=C], [data-leader=C], [data-label=C] { animation-range: cover 30% cover 46%; }
-    [data-mark-part=B], [data-leader=B], [data-label=B] { animation-range: cover 50% cover 66%; }
+    [data-stage] :is([data-mark-part=T], [data-leader=T], [data-label=T]) { animation-range: cover 10% cover 26%; }
+    [data-stage] :is([data-mark-part=C], [data-leader=C], [data-label=C]) { animation-range: cover 30% cover 46%; }
+    [data-stage] :is([data-mark-part=B], [data-leader=B], [data-label=B]) { animation-range: cover 50% cover 66%; }
+    /* the ranges sit at the same specificity as the `animation` shorthand above (which resets animation-range) and after it */
     @keyframes part-on { from { opacity: 0; } to { opacity: 1; } }
     @keyframes label-on { from { opacity: .5; } to { opacity: 1; } }
   }
