@@ -4,6 +4,8 @@ import { nav } from '../data/content';
 ---
 <div class="blur top" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="blur bot" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="blur side lft" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="blur side rgt" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 {[false, true].map((ghost) => (
   /* ghost: an inert copy that paints only the text links, difference-blended against the page.
      The real header is sticky (its own stacking context), so a blend inside it can't see the page. */
@@ -34,13 +36,17 @@ import { nav } from '../data/content';
   .blur i, .blur::after { grid-area: 1 / 1; }
   .blur::after { content: ""; }
   /* bottom: our original blur, mirrored (strongest at the screen edge, no scrim) — the top's header-hidden shape */
-  .bot { top: auto; bottom: 0; height: 104px; }
-  .bot i:nth-child(1) { backdrop-filter: blur(1px);  mask: linear-gradient(to top, #000 40%, transparent 60%); }
-  .bot i:nth-child(2) { backdrop-filter: blur(2px);  mask: linear-gradient(to top, #000 30%, transparent 50%); }
-  .bot i:nth-child(3) { backdrop-filter: blur(4px);  mask: linear-gradient(to top, #000 20%, transparent 40%); }
-  .bot i:nth-child(4) { backdrop-filter: blur(8px);  mask: linear-gradient(to top, #000 10%, transparent 30%); }
-  .bot i:nth-child(5) { backdrop-filter: blur(16px); mask: linear-gradient(to top, #000 0%, transparent 20%); }
-  .bot i:nth-child(6) { backdrop-filter: blur(32px); mask: linear-gradient(to top, #000 0%, transparent 10%); }
+  .bot { top: auto; bottom: 0; height: 104px; --dir: to top; }
+  /* left / right: the same fade, turned to face each side edge */
+  .side { bottom: 0; height: auto; width: 72px; } /* ponytail: width picked by eye, tune here */
+  .lft { right: auto; --dir: to right; }
+  .rgt { left: auto; --dir: to left; }
+  :is(.bot, .side) i:nth-child(1) { backdrop-filter: blur(1px);  mask: linear-gradient(var(--dir), #000 40%, transparent 60%); }
+  :is(.bot, .side) i:nth-child(2) { backdrop-filter: blur(2px);  mask: linear-gradient(var(--dir), #000 30%, transparent 50%); }
+  :is(.bot, .side) i:nth-child(3) { backdrop-filter: blur(4px);  mask: linear-gradient(var(--dir), #000 20%, transparent 40%); }
+  :is(.bot, .side) i:nth-child(4) { backdrop-filter: blur(8px);  mask: linear-gradient(var(--dir), #000 10%, transparent 30%); }
+  :is(.bot, .side) i:nth-child(5) { backdrop-filter: blur(16px); mask: linear-gradient(var(--dir), #000 0%, transparent 20%); }
+  :is(.bot, .side) i:nth-child(6) { backdrop-filter: blur(32px); mask: linear-gradient(var(--dir), #000 0%, transparent 10%); }
   /* top, header shown: the regiontype band (its 0deg masks, flipped into top-down px). Opaque to --m0, clear at --m1 */
   .top i { mask: linear-gradient(#000 var(--m0), transparent var(--m1)); transition: --m0 var(--nav-dur, .35s) var(--ease-out), --m1 var(--nav-dur, .35s) var(--ease-out), backdrop-filter var(--nav-dur, .35s) var(--ease-out); }
   .top i:nth-child(1) { backdrop-filter: blur(.55px);  --m0: 102px; --m1: 120px; }
