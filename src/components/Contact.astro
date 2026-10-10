@@ -7,7 +7,11 @@ import { contact } from '../data/content';
   <div class="wrap in">
     <div class="ask">
       <Eyebrow>{contact.eyebrow}</Eyebrow>
-      <h2 class="h2" data-reveal="display">{contact.title}</h2>
+      <h2 class="h2" data-reveal="letters" aria-label={contact.title}>
+        {(() => { let n = 0; return contact.title.split(' ').map((w, k) => (
+          <>{k > 0 && ' '}<span class="word" aria-hidden="true">{[...w].map((c) => <span data-l style={`--l:${n++}`}>{c}</span>)}</span></>
+        )); })()}
+      </h2>
       <p class="lede" data-reveal>{contact.body}</p>
       <div class="actions" data-reveal>
         <a class="btn btn--solid" href={contact.primary.href}><Glyph stroke="var(--on-accent)" />{contact.primary.label}</a>
@@ -19,6 +23,8 @@ import { contact } from '../data/content';
   </div>
 </section>
 <style>
+  .word { white-space: nowrap; }
+  [data-l] { display: inline-block; } /* transforms need a box */
   .contact { border-top: 1px solid var(--line); overflow: hidden; }
   .in { padding-block: clamp(144px, 18vw, 280px) clamp(56px, 7vw, 104px); display: flex; flex-direction: column; }
   .ask { display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; }

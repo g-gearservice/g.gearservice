@@ -102,6 +102,11 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 .js [data-reveal=part][data-from=center] { clip-path: inset(0 50% 0 50%); }
 .js [data-reveal=part].is-in { clip-path: inset(0); transition: clip-path 700ms var(--ease-out); }
 
+/* letters: the hero wordmark's entrance - the line rises out of a blur, the letters stagger in 40ms apart */
+.js [data-reveal=letters] { opacity: 0; transform: none; }
+.js [data-reveal=letters].is-in { opacity: 1; animation: blur-up 1100ms var(--ease-out) backwards; }
+.js [data-reveal=letters].is-in [data-l] { animation: letter-in 700ms var(--ease-out) calc(var(--l) * 40ms) both; }
+
 /* footer mark rises from the baseline */
 .js [data-reveal=rise] { clip-path: inset(100% 0 0 0); }
 .js [data-reveal=rise].is-in { clip-path: inset(0); transition: clip-path 800ms var(--ease-out); }
@@ -113,7 +118,7 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 .js .eyebrow[data-reveal].is-in .eyebrow__rule { transform: none; transition: transform 600ms var(--ease-out) calc(var(--i, 0) * 60ms + 120ms); }
 
 @media (prefers-reduced-motion: reduce) {
-  .js [data-reveal], .js [data-reveal-item] { transform: none !important; clip-path: none !important; animation: none !important; }
+  .js [data-reveal], .js [data-reveal-item], .js [data-l] { transform: none !important; clip-path: none !important; animation: none !important; }
   .js [data-reveal], .js [data-reveal-item] { opacity: 0; }
   .js [data-reveal].is-in, .js [data-reveal-item].is-in { opacity: 1; transition: opacity 200ms ease; }
   .js .rule, .js .eyebrow__rule { transform: none !important; }
