@@ -65,8 +65,8 @@ document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => {
 });
 root.classList.add('motion-ready');
 
-// Footer: reaching the page end lifts the bottom arc; scrolling back up lowers it and drops the top arc's tips onto the
-// © line (--drop: that text's bottom edge below the mark's top edge).
+// Footer: reaching the page end lifts the bottom arc and drops the top arc's tips onto the © line (--drop: that text's
+// bottom edge below the mark's top edge); scrolling back up puts both back.
 const foot = document.querySelector<HTMLElement>('[data-footer-mark]');
 const copy = document.querySelector<HTMLElement>('footer .copy .thr');
 if (foot && copy && !reduce) {

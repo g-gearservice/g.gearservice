@@ -46,6 +46,6 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   /* at the page end the bottom arc rises 36 units (of 447 = 8.05% of the box) */
   .end > svg { transition: transform 350ms var(--ease-out); will-change: transform; }
   .end[data-up] .arc-bot { transform: translateY(-8.05%); }
-  /* away from the end the top arc drops until its tips touch the © line (motion.ts → --drop) */
-  .end:not([data-up]) > svg:first-child { transform: translateY(var(--drop, 0px)); }
+  /* at the end the top arc also drops until its tips touch the © line (motion.ts → --drop) */
+  .end[data-up] > svg:first-child { transform: translateY(var(--drop, 0px)); }
 </style>
