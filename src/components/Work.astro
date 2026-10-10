@@ -27,7 +27,11 @@ import { work } from '../data/content';
             <div class="embed" id={`embed-${w.name}`} inert>
               <div class="embed__clip">
                 <div class="embed__frame">
-                  <iframe title={`${w.name}, live`} data-src={w.href} referrerpolicy="no-referrer" loading="lazy"></iframe>
+                  <div class="embed__screen">
+                    <iframe title={`${w.name}, live`} data-src={w.href} referrerpolicy="no-referrer" loading="lazy"></iframe>
+                    <button type="button" class="ctl ctl--play" data-play><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 10 6 0 12Z" /></svg>play</button>
+                    <button type="button" class="ctl ctl--pause" data-pause><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0h3.5v12H0zM6.5 0H10v12H6.5z" /></svg>pause</button>
+                  </div>
                   <a class="embed__out" href={w.href} rel="noopener">open in a new tab ↗</a>
                 </div>
               </div>
@@ -40,15 +44,23 @@ import { work } from '../data/content';
 </section>
 <script>
   // the live button opens the embed under its row: the grid row grows (pushing the rows below, and their border, down)
-  // while the frame rises into place. The iframe loads on first open.
+  // while the frame rises into place. The site loads only on play; pause (or closing the row) unloads it.
   document.querySelectorAll<HTMLElement>('[data-embed]').forEach((li) => {
     const btn = li.querySelector<HTMLButtonElement>('[data-live]');
     const box = li.querySelector<HTMLElement>('.embed');
     const frame = li.querySelector<HTMLIFrameElement>('iframe');
-    if (!btn || !box || !frame) return;
+    const screen = li.querySelector<HTMLElement>('.embed__screen');
+    if (!btn || !box || !frame || !screen) return;
+    const play = (on: boolean) => {
+      frame.src = on ? frame.dataset.src! : 'about:blank';
+      screen.classList.toggle('is-playing', on);
+      li.querySelector<HTMLButtonElement>(on ? '[data-pause]' : '[data-play]')!.focus({ preventScroll: true });
+    };
+    li.querySelector('[data-play]')!.addEventListener('click', () => play(true));
+    li.querySelector('[data-pause]')!.addEventListener('click', () => play(false));
     btn.addEventListener('click', () => {
       const open = btn.getAttribute('aria-expanded') !== 'true';
-      if (open && !frame.src) frame.src = frame.dataset.src!;
+      if (!open && screen.classList.contains('is-playing')) { frame.src = 'about:blank'; screen.classList.remove('is-playing'); }
       btn.setAttribute('aria-expanded', String(open));
       box.inert = !open;
       li.classList.toggle('is-open', open);
@@ -76,6 +88,15 @@ import { work } from '../data/content';
   .embed__frame { display: flex; flex-direction: column; gap: 10px; padding-top: clamp(8px, 1.5vw, 20px); opacity: 0; transform: translateY(48px); transition: opacity 400ms var(--ease-out), transform 600ms var(--ease-out); }
   .is-open .embed__frame { opacity: 1; transform: none; transition-delay: 80ms; }
   iframe { display: block; width: 100%; height: clamp(420px, 70svh, 760px); border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
+  .embed__screen { position: relative; }
+  /* play / pause: the live pill, bigger; play sits centred on the idle panel, pause in the corner while it runs */
+  .ctl { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 17px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
+  .ctl:hover { opacity: .85; }
+  .ctl:active { transform: scale(.97); transition-duration: 150ms, 100ms; }
+  .ctl svg { width: 10px; height: 12px; fill: currentColor; }
+  .ctl--play { top: 50%; left: 50%; translate: -50% -50%; }
+  .ctl--pause { top: 14px; right: 14px; padding: 8px 16px; font-size: 14px; }
+  .embed__screen:not(.is-playing) .ctl--pause, .is-playing .ctl--play { display: none; }
   .embed__out { align-self: flex-end; font-family: var(--font-label); font-size: 13px; line-height: 1.4; letter-spacing: 0; font-weight: 400; text-decoration: none; color: var(--soft); }
   @media (prefers-reduced-motion: reduce) { .embed, .embed__frame { transition: none; } }
   .statuses { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
