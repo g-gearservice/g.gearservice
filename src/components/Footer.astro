@@ -15,12 +15,13 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
     </div>
   </div>
   <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border.
-       Arcs as two groups so overscrolling past the page end can lift the bottom one (motion.ts → --lift) -->
+       Arcs as two stacked SVGs so overscrolling past the page end can lift the bottom one (motion.ts → --lift) on its own
+       compositor layer - a transform on a <g> inside one SVG repainted the whole mark (and the blend over it) every frame -->
   <div class="crop">
-    <svg viewBox="103 369 875 447" class="end" aria-hidden="true" data-mark data-lit="all" data-reveal="rise" data-footer-mark>
-      <g class="mk" style="stroke:var(--mark)"><use href="#mark-top" /></g>
-      <g class="mk arc-bot" style="stroke:var(--mark)"><use href="#mark-bot" /></g>
-    </svg>
+    <div class="end" aria-hidden="true" data-reveal="rise" data-footer-mark>
+      <svg viewBox="103 369 875 447"><g class="mk" style="stroke:var(--mark)"><use href="#mark-top" /></g></svg>
+      <svg viewBox="103 369 875 447" class="arc-bot"><g class="mk" style="stroke:var(--mark)"><use href="#mark-bot" /></g></svg>
+    </div>
   </div>
 </footer>
 <style>
@@ -40,8 +41,9 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   nav { display: flex; flex-wrap: wrap; gap: 0 22px; }
   nav a, .ph { color: var(--soft); text-decoration: none; padding-block: 12px; }
   .crop { overflow: hidden; }
-  .end { display: block; width: 96vw; height: auto; margin: 0 auto -22vw; }
-  /* rubber band: rises up to 36 units (of 447) while pushed, springs back when let go */
-  .arc-bot { transform: translateY(calc(var(--lift, 0) * -36px)); transition: transform 700ms var(--ease-out); }
+  .end { display: grid; width: 96vw; margin: 0 auto -22vw; }
+  .end > svg { grid-area: 1 / 1; display: block; width: 100%; height: auto; }
+  /* rubber band: rises up to 36 units (of 447 = 8.05% of the box) while pushed, springs back when let go */
+  .arc-bot { transform: translateY(calc(var(--lift, 0) * -8.05%)); transition: transform 700ms var(--ease-out); will-change: transform; }
   .end[data-pulling] .arc-bot { transition-duration: 120ms; }
 </style>
