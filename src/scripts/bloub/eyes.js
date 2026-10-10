@@ -106,7 +106,8 @@ export function mountEyes(host, { calm = false } = {}) {
     dozing = on;
     nods.forEach(clearTimeout);
     if (on) {
-      awake = engine.expr ?? EXPRESSION_BY_ID.get('neutre');
+      // no expression picked = the engine's built-in face; name it, or the nods glide from null (buddy.js does the same)
+      awake = engine.expr ??= EXPRESSION_BY_ID.get('neutre');
       const last = NODS[NODS.length - 1][1];
       nods = NODS.map(([ms, e]) => setTimeout(() => at((now) => {
         glideTo(e, now, 0.9, e === NODS[0][1] ? DOZE_LOOK : null);
