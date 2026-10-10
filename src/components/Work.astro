@@ -87,7 +87,7 @@ import { work } from '../data/content';
   .meta { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
   .desc { font-size: 17px; line-height: 1.6; }
   /* live: the nav's contact pill, small */
-  .live { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
+  .live { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border: 0; border-radius: 999px; corner-shape: squircle; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
   .live:hover { opacity: .85; }
   .live:active { transform: scale(.97); transition-duration: 150ms, 100ms; }
   .live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--on-accent); }
@@ -118,7 +118,7 @@ import { work } from '../data/content';
   .edge i:nth-child(5) { backdrop-filter: blur(16px); --m0: 0px; --m1: calc(var(--w) * .2); }
   .edge i:nth-child(6) { backdrop-filter: blur(32px); --m0: 0px; --m1: calc(var(--w) * .1); }
   /* play / pause: the live pill, bigger; play sits centred on the idle panel, pause in the corner while it runs */
-  .ctl { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 17px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
+  .ctl { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border: 0; border-radius: 999px; corner-shape: squircle; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 17px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
   .ctl:hover { opacity: .85; }
   .ctl:active { transform: scale(.97); transition-duration: 150ms, 100ms; }
   .ctl svg { width: 10px; height: 12px; fill: currentColor; }
