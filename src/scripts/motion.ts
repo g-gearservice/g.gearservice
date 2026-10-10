@@ -9,7 +9,15 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Touch stays native: JS-driven touch (syncTouch) dropped frames on phones.
 // Anchor offset = sticky header height (matches scroll-padding-top in global.css).
 const coarse = matchMedia('(pointer: coarse)').matches;
-if (!reduce && !coarse) new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } });
+const lenis = !reduce && !coarse ? new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } }) : null;
+
+// 'scrolllock' (Work.astro, while the embed has focus): the page holds still. stop() also kills Lenis' glide;
+// html.scroll-locked (global.css) stops native scroll, which the embed would otherwise chain into.
+addEventListener('scrolllock', (e) => {
+  const on = (e as CustomEvent<boolean>).detail;
+  if (on) lenis?.stop(); else lenis?.start();
+  root.classList.toggle('scroll-locked', on);
+});
 
 // Header slides away while scrolling down, back on any scroll up (html.nav-up → Header.astro); the blur stays. Always shown near the top.
 // Slide time follows scroll speed: a flick snaps it (150ms), a slow drag eases it (600ms). --nav-dur, set at each flip.
