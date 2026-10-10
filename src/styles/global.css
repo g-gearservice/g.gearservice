@@ -6,6 +6,17 @@
 @property --m0 { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --m1 { syntax: '<length>'; inherits: false; initial-value: 0px; }
 
+/* red-black chrome (.thr text, .thr-img shapes via --shape): black on the red, white only over black. A backdrop filter
+   thresholds the luminance behind (grayscale → invert → steep contrast: red ≈ .13 → 0, black → 1), clipped to the
+   glyphs by mask-clip: text / the shape mask, so edges stay anti-aliased. No mask-clip: text → plain black text. */
+:root { --thr: grayscale(1) invert(1) brightness(.535) contrast(20); }
+@supports (-webkit-mask-clip: text) or (mask-clip: text) {
+  [data-colorway=red-black] :is(.thr, .thr-img) { color: transparent !important; --fg: transparent; -webkit-backdrop-filter: var(--thr); backdrop-filter: var(--thr); }
+  [data-colorway=red-black] .thr { -webkit-mask-image: linear-gradient(#000 0 0); mask-image: linear-gradient(#000 0 0); -webkit-mask-clip: text; mask-clip: text; }
+  [data-colorway=red-black] .thr-img > svg { opacity: 0; } /* the artwork only shapes the mask; its own paint would cover the filter */
+  [data-colorway=red-black] .thr-img { -webkit-mask: var(--shape) center / 100% 100% no-repeat content-box; mask: var(--shape) center / 100% 100% no-repeat content-box; }
+}
+
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 72px; /* sticky header height */ }
 body { margin: 0; background: var(--bg); color: var(--fg); }
 

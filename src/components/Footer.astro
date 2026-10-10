@@ -1,19 +1,19 @@
 ---
 import Wordmark from './Wordmark.astro';
 import { footer } from '../data/content';
+import { wordmarkPaths } from '../data/marks';
+// the wordmark as a mask image, for red-black's .thr-img
+const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 875 142'>${wordmarkPaths.map((d) => `<path d='${d}'/>`).join('')}</svg>`;
 ---
 <footer data-section="footer">
-  {[1, 2, 3].map((layer) => (
-  /* layers 2 and 3: inert copies, only for red-black's threshold (see the styles) */
-  <div class="wrap" data-layer={layer} aria-hidden={layer > 1 ? 'true' : undefined} inert={layer > 1}>
+  <div class="wrap">
     <div class="row">
-      <span class="copy">© 2026 <span class="brand"><Wordmark /></span></span>
+      <span class="copy"><span class="thr">© 2026</span> <span class="brand thr-img" style={`--shape:url("data:image/svg+xml,${encodeURIComponent(wordmarkSvg)}")`}><Wordmark /></span></span>
       <nav aria-label="Footer">
-        {footer.nav.map((n) => n.href ? <a href={n.href}>{n.label}</a> : <span class="ph">{n.label}</span>)}
+        {footer.nav.map((n) => n.href ? <a class="thr" href={n.href}>{n.label}</a> : <span class="ph thr">{n.label}</span>)}
       </nav>
     </div>
   </div>
-  ))}
   <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border.
        Arcs as two groups so overscrolling past the page end can lift the bottom one (motion.ts → --lift) -->
   <div class="crop">
@@ -32,17 +32,11 @@ import { footer } from '../data/content';
   /* row content in the reverse colour, like the header ghost: --rev difference-blended against the mark behind
      (the blend sits on .wrap: its z-index makes it the stacking context, so a blend on .row would see nothing) */
   .wrap { --rev: #fff; mix-blend-mode: difference; }
-  .wrap[data-layer='2'], .wrap[data-layer='3'] { display: none; pointer-events: none; }
-  /* red-black: black on the red, white only over black - the header ghost's three-layer luminance threshold */
-  :global([data-colorway=red-black]) .wrap {
-    &[data-layer] { display: block; }
-    &[data-layer='1'] { --rev: #808080; mix-blend-mode: color; }
-    &[data-layer='3'] { --rev: #1a1a1a; mix-blend-mode: color-burn; }
-  }
+  :global([data-colorway=red-black]) .wrap { --rev: #000; mix-blend-mode: normal; } /* paints through .thr (global.css); #000 = its fallback */
   :global([data-colorway=red-mist]) .wrap { --rev: var(--fg); mix-blend-mode: normal; }
   .row { --fg: var(--rev); --soft: var(--rev); color: var(--rev); }
   .copy { padding-block: 12px; }
-  .brand { color: var(--fg); font-weight: 500; letter-spacing: -0.03em; }
+  .brand { display: inline-block; vertical-align: middle; line-height: 0; color: var(--fg); font-weight: 500; letter-spacing: -0.03em; } /* a box the size of the artwork, so the red-black mask fits it */
   nav { display: flex; flex-wrap: wrap; gap: 0 22px; }
   nav a, .ph { color: var(--soft); text-decoration: none; padding-block: 12px; }
   .crop { overflow: hidden; }
