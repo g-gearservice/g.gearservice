@@ -98,6 +98,11 @@ import { work } from '../data/content';
   .is-open .embed__frame { opacity: 1; transform: none; transition-delay: 80ms; }
   iframe { display: block; width: 100%; height: clamp(420px, 70svh, 760px); border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
   .embed__screen { position: relative; overflow: hidden; border-radius: 20px; }
+  /* Apple's continuous corners where the browser can draw them (corner-shape, Chromium 139+); a squircle reads smaller
+     than a round arc of the same radius, so it gets a bigger one. Elsewhere the plain 20px round corner stays */
+  @supports (corner-shape: squircle) {
+    .embed__screen, iframe { border-radius: 32px; corner-shape: squircle; } /* ponytail: 32px picked by eye, tune here */
+  }
   /* idle: the loaded site sits blurred under the play button (scaled so the blur's soft edge stays outside the clip) */
   .embed__screen iframe { transition: filter 400ms var(--ease-out), scale 400ms var(--ease-out); }
   .embed__screen:not(.is-playing) iframe { filter: blur(4px); scale: 1.02; pointer-events: none; }
