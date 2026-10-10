@@ -87,11 +87,11 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 }
 
 /* ---- Scroll reveal (one-shot; motion.ts adds .is-in) ---- */
-.js [data-reveal]:not([data-reveal=part], [data-reveal=rise]), .js [data-reveal-item] {
+.js [data-reveal]:not([data-reveal=part], [data-reveal=rise], [data-reveal=letters]), .js [data-reveal-item] {
   opacity: 0; transform: translateY(var(--reveal-y));
 }
 .js [data-reveal=display] { --reveal-y: 24px; }
-.js [data-reveal].is-in, .js [data-reveal-item].is-in {
+.js [data-reveal]:where(:not([data-reveal=letters])).is-in, .js [data-reveal-item].is-in { /* :where keeps the specificity the overrides below expect */
   opacity: 1; transform: none;
   transition: opacity 600ms var(--ease-out) calc(var(--i, 0) * 60ms), transform 600ms var(--ease-out) calc(var(--i, 0) * 60ms);
 }
@@ -102,8 +102,9 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 .js [data-reveal=part][data-from=center] { clip-path: inset(0 50% 0 50%); }
 .js [data-reveal=part].is-in { clip-path: inset(0); transition: clip-path 700ms var(--ease-out); }
 
-/* letters: the hero wordmark's entrance - the line rises out of a blur, the letters stagger in 40ms apart */
-.js [data-reveal=letters] { opacity: 0; transform: none; }
+/* letters: the hero wordmark's entrance - the line rises out of a blur, the letters stagger in 40ms apart.
+   Animation only: kept out of the generic reveal above, whose fade + slide would run on top of it */
+.js [data-reveal=letters] { opacity: 0; }
 .js [data-reveal=letters].is-in { opacity: 1; animation: blur-up 1100ms var(--ease-out) backwards; }
 .js [data-reveal=letters].is-in [data-l] { animation: letter-in 700ms var(--ease-out) calc(var(--l) * 40ms) both; }
 
