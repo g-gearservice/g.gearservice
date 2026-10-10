@@ -11,7 +11,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const coarse = matchMedia('(pointer: coarse)').matches;
 const lenis = !reduce && !coarse ? new Lenis({ autoRaf: true, lerp: 0.07, wheelMultiplier: 0.7, anchors: { offset: -72 } }) : null;
 
-// 'scrolllock' (Work.astro, while the embed has focus): the page holds still. stop() also kills Lenis' glide;
+// 'scrolllock' (Work.astro, while the pointer is over the playing embed): the page holds still. stop() also kills Lenis' glide;
 // html.scroll-locked (global.css) stops native scroll, which the embed would otherwise chain into.
 addEventListener('scrolllock', (e) => {
   const on = (e as CustomEvent<boolean>).detail;

@@ -45,8 +45,8 @@ import { work } from '../data/content';
 <script>
   // the live button opens the embed under its row: the grid row grows (pushing the rows below, and their border, down)
   // while the frame rises into place. The site loads on first open and waits behind a blur; play lifts the blur and
-  // hands it the pointer, pause (or closing the row) puts it back under. Clicking into the playing site locks the
-  // page scroll (motion.ts) until focus comes back to the page.
+  // hands it the pointer, pause (or closing the row) puts it back under. While the pointer is over the playing site
+  // the page scroll holds still (motion.ts); off it, the page scrolls freely.
   document.querySelectorAll<HTMLElement>('[data-embed]').forEach((li) => {
     const btn = li.querySelector<HTMLButtonElement>('[data-live]');
     const box = li.querySelector<HTMLElement>('.embed');
@@ -55,12 +55,11 @@ import { work } from '../data/content';
     if (!btn || !box || !frame || !screen) return;
     frame.inert = true;
     const lock = (on: boolean) => dispatchEvent(new CustomEvent('scrolllock', { detail: on }));
-    // a click into a cross-origin frame only shows as the page losing focus to it
-    addEventListener('blur', () => setTimeout(() => { if (document.activeElement === frame && !frame.inert) lock(true); }));
-    addEventListener('focus', () => lock(false));
+    screen.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch' && !frame.inert) lock(true); });
+    screen.addEventListener('pointerleave', () => lock(false));
     const play = (on: boolean, focus = true) => {
       frame.inert = !on;
-      if (!on) lock(false);
+      lock(on && screen.matches(':hover'));
       screen.classList.toggle('is-playing', on);
       if (focus) li.querySelector<HTMLButtonElement>(on ? '[data-pause]' : '[data-play]')!.focus({ preventScroll: true });
     };
