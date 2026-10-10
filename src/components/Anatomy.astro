@@ -12,11 +12,13 @@ const [T, C, B] = anatomy.labels;
   </div>
   <div class="stage">
     <div class="bleed" data-stage>
-      <Mark lit="all" split label="The g.gearservice mark: a top arc, a bottom arc and the lens where they cross" class="mark" />
-      <div class="labels">
+      <div class="art">
+        <Mark lit="all" split label="The g.gearservice mark: a top arc, a bottom arc and the lens where they cross" class="mark" />
         <span class="line line--T" aria-hidden="true" data-leader="T"></span>
         <span class="line line--C" aria-hidden="true" data-leader="C"></span>
         <span class="line line--B" aria-hidden="true" data-leader="B"></span>
+      </div>
+      <div class="labels">
         <div class="lab lab--T" data-label="T" ><span class="k">{T.kicker}</span><span class="n">{T.name}</span></div>
         <div class="lab lab--C" data-label="C" ><span class="k">{C.kicker}</span><span class="n">{C.name}</span></div>
         <div class="lab lab--B" data-label="B" ><span class="k">{B.kicker}</span><span class="n">{B.name}</span></div>
@@ -28,18 +30,20 @@ const [T, C, B] = anatomy.labels;
   .anatomy { border-top: 1px solid var(--line); overflow: hidden; }
   .head { padding-top: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; gap: 20px; }
   .lede { max-width: 560px; }
-  .stage { width: 100%; overflow: hidden; padding-top: calc(clamp(32px, 4vw, 56px) + 120px); } /* + room for the top-arc label */
+  .stage { width: 100%; overflow: hidden; padding-top: clamp(32px, 4vw, 56px); }
   .bleed { position: relative; width: 116vw; margin-left: -8vw; }
   .bleed :global(.mark) { display: block; width: 100%; height: auto; }
-  .labels { position: relative; height: 132px; } /* top edge = the mark's bottom; the mark is 116vw * 447/875 = 59.26vw tall */
+  /* leaders live on the mark's own box, so % are of the mark (viewBox 103 369 875 447) and they end 56px into the label row */
+  .art { position: relative; }
+  .labels { position: relative; height: 132px; }
   .line { position: absolute; width: 1px; background: var(--fg); transform-origin: top center; }
-  /* top arc: up from its right tip; lens: up to the lens centre (y 592, 29.56vw above the base), crossing the top arc;
-     bottom arc: down from its left leg */
-  .line--T { left: 90.7%; top: calc(-59.26vw - 56px); height: 56px; }
-  .line--C { left: 50%; top: -29.56vw; height: calc(29.56vw + 56px); }
-  .line--B { left: 9.3%; top: 0; height: 56px; }
+  /* top arc: down from the underside of its belly (x 680, y 743); lens: down from the lens centre (y 592), crossing the
+     top arc; bottom arc: down from its left leg */
+  .line--T { left: 65.9%; top: 83.6%; height: calc(16.4% + 56px); }
+  .line--C { left: 50%; top: 49.9%; height: calc(50.1% + 56px); }
+  .line--B { left: 9.3%; top: 100%; height: 56px; }
   .lab { position: absolute; top: 56px; display: flex; flex-direction: column; gap: 4px; white-space: nowrap; }
-  .lab--T { top: calc(-59.26vw - 56px); translate: 0 -100%; right: calc(9.3% + 14px); align-items: flex-end; }
+  .lab--T { left: calc(65.9% + 14px); }
   .lab--C { left: calc(50% + 14px); }
   .lab--B { left: calc(9.3% + 14px); }
   .k { font-family: var(--font-label); font-size: 13px; color: var(--soft); }
@@ -47,7 +51,7 @@ const [T, C, B] = anatomy.labels;
   /* narrow phones: the centre label drops a row so it cannot collide with "delta team" */
   @media (max-width: 560px) {
     .labels { height: 192px; }
-    .line--C { height: calc(29.56vw + 116px); }
+    .line--C { height: calc(50.1% + 116px); }
     .lab--C { top: 116px; }
   }
   /* desktop: mark rises behind the head so its arc tips sit level with the h2 top
@@ -56,6 +60,6 @@ const [T, C, B] = anatomy.labels;
     .anatomy { display: grid; }
     .head, .stage { grid-area: 1 / 1; }
     .head { position: relative; z-index: 1; align-self: start; width: 100%; pointer-events: none; }
-    .stage { padding-top: calc(clamp(40px, 5vw, 72px) + 36px + 64px); } /* top-arc label clears the eyebrow row */
+    .stage { padding-top: calc(clamp(40px, 5vw, 72px) + 36px); }
   }
 </style>
