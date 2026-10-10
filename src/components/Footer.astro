@@ -25,7 +25,13 @@ import { footer } from '../data/content';
   footer { display: grid; border-top: 0; overflow: hidden; font-family: var(--font-label); font-size: 13px; color: var(--soft); }
   .wrap, .crop { grid-area: 1 / 1; align-self: start; }
   .wrap { position: relative; z-index: 1; width: 100%; }
-  .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 24px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 24px; padding-top: 12px; }
+  /* row content in the reverse colour, like the header ghost: --rev difference-blended against the mark behind
+     (the blend sits on .wrap: its z-index makes it the stacking context, so a blend on .row would see nothing) */
+  .wrap { --rev: #fff; mix-blend-mode: difference; }
+  :global([data-colorway=red-black]) .wrap { --rev: var(--bg); }
+  :global([data-colorway=red-mist]) .wrap { --rev: var(--fg); mix-blend-mode: normal; }
+  .row { --fg: var(--rev); --soft: var(--rev); color: var(--rev); }
   .copy { padding-block: 12px; }
   .brand { color: var(--fg); font-weight: 500; letter-spacing: -0.03em; }
   nav { display: flex; flex-wrap: wrap; gap: 0 22px; }
