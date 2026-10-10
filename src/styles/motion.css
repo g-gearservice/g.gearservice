@@ -93,13 +93,17 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 
 /* ---- Process: pinned, scenes picked by scroll (motion.ts sets [data-scene] on the stage, [data-state] on each step).
    Wide screens with motion only; elsewhere the steps keep the one-shot reveal below.
-   0 heading centred (--drop), steps hidden · 1-6 step n rises in, its rule draws, earlier steps dim · 7 all lit ---- */
+   0 heading centred (--drop), steps hidden · 1-6 block lifted (--lift), heading dimmed, step n rises in, its rule draws, earlier steps dim · 7 all lit ---- */
 @media (min-width: 1000px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
   .js [data-section=process] { height: calc(100svh + 8 * var(--step)); --step: 45svh; }
   .js [data-process-stage] { position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center; }
   .js [data-process-stage] .in { padding-block: 0; }
   .js [data-process-stage] [data-process-steps] { grid-template-columns: repeat(6, 1fr); }
-  .js [data-process-stage] [data-process-head] { transition: transform 900ms var(--ease-in-out); }
+  .js [data-process-stage] [data-process-head] { transition: transform 900ms var(--ease-in-out), opacity 900ms var(--ease-in-out); }
+  /* scenes 1+: the block rises until the steps are centred; the heading goes up with it and steps back */
+  .js [data-process-stage] .in { transition: transform 900ms var(--ease-in-out); }
+  .js [data-process-stage][data-scene]:not([data-scene="0"]) .in { transform: translateY(calc(-1 * var(--lift, 0px))); }
+  .js [data-process-stage][data-scene]:not([data-scene="0"]) [data-process-head] { opacity: .3; }
   .js [data-process-stage][data-scene="0"] [data-process-head] { transform: translateY(var(--drop, 0px)); transition-delay: 200ms; } /* back to 0: step 01 clears first */
   /* overrides the one-shot reveal (data-reveal-item) on the steps */
   .js [data-process-stage][data-scene] li[data-reveal-item] {
