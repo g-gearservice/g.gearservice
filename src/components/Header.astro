@@ -84,9 +84,13 @@ const glyphSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22' fi
   /* --rev: the reverse colour the ghost paints with (white by default, difference-blended) */
   .ghost { --rev: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 11; pointer-events: none; mix-blend-mode: difference; }
   .ghost .home, .ghost nav a:not(.cta) { --fg: var(--rev); color: var(--rev); }
-  /* red-black: the ghost paints through .thr / .thr-img (global.css) instead of a blend; the real cta shows */
-  :global([data-colorway=red-black]) .ghost { --rev: #000; mix-blend-mode: normal; .cta { visibility: hidden; } } /* #000: the no-mask-clip fallback */
-  :global([data-colorway=red-black]) header:not(.ghost) nav a.cta { background: var(--accent); color: var(--on-accent); }
+  /* red-black: the ghost paints through .thr / .thr-img (global.css) instead of a blend. The cta pill is the same
+     threshold (black on the red, white over black; the border-radius clips it), its label stays red on top */
+  :global([data-colorway=red-black]) .ghost { --rev: #000; mix-blend-mode: normal; }
+  :global([data-colorway=red-black]) .ghost nav a.cta { background: var(--accent); color: var(--on-accent); }
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    :global([data-colorway=red-black]) .ghost nav a.cta { background: transparent; -webkit-backdrop-filter: var(--thr); backdrop-filter: var(--thr); }
+  }
   /* red-white: no difference blend can turn red ground white (white - red = cyan), so it paints plain white */
   :global([data-colorway=red-mist]) .ghost { --rev: var(--fg); mix-blend-mode: normal; }
   nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
