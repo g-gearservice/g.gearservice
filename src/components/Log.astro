@@ -17,7 +17,7 @@ import { log } from '../data/content';
         return (
           <li data-reveal-item data-part={e.part}>
             <span class="date">{e.date}</span>
-            <Mark lit={planned ? 'none' : e.part} litColor="var(--mark-s)" base={planned ? 'var(--soft)' : 'var(--line)'} class="shape" />
+            <Mark lit={planned ? 'none' : e.part} litColor="var(--mark-s)" base={planned ? 'var(--soft)' : 'var(--dim)'} class="shape" />
             <span class={`title${planned ? ' title--next' : ''}`}>{e.title}</span>
             <span class="team">{e.team}</span>
             <span class="st">
