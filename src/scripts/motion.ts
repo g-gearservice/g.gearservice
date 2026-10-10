@@ -113,8 +113,8 @@ if (hero) {
   scene();
 }
 
-// Process: pinned like the hero. Scroll picks the scene (0-7, one per --step); motion.css transitions between them.
-// 0 heading alone, centred · 1-6 block lifts so the steps are centred, heading dims; step n comes in, earlier steps dim · 7 all steps lit.
+// Process: pinned like the hero. Scroll picks the scene (-1 before the pin, then 0-7, one per --step); motion.css transitions between them.
+// -1 heading hidden in a blur · 0 heading alone, centred, focuses in · 1-6 block lifts so the steps are centred, heading dims; step n comes in, earlier steps dim · 7 all steps lit.
 const proc = document.querySelector<HTMLElement>('[data-process-stage]');
 if (proc) {
   const sec = proc.parentElement!;
@@ -129,7 +129,8 @@ if (proc) {
   };
   const scene = () => {
     const step = (sec.offsetHeight - innerHeight) / 8;
-    const n = Math.min(Math.max(Math.floor(-sec.getBoundingClientRect().top / step), 0), 7);
+    const top = sec.getBoundingClientRect().top;
+    const n = top > 0 ? -1 : Math.min(Math.floor(-top / step), 7); // -1 until the stage pins
     if (proc.dataset.scene === String(n)) return;
     proc.dataset.scene = String(n);
     items.forEach((li, i) => { li.dataset.state = n === 7 || i + 1 === n ? 'now' : i + 1 < n ? 'past' : 'next'; });
