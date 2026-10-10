@@ -93,7 +93,7 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 
 /* ---- Process: pinned, scenes picked by scroll (motion.ts sets [data-scene] on the stage, [data-state] on each step).
    Wide screens with motion only; elsewhere the steps keep the one-shot reveal below.
-   -1 heading blurred out · 0 heading centred (--drop), focuses in, steps hidden · 1-6 block lifted (--lift), heading dimmed, step n rises in, its rule draws, earlier steps dim · 7 all lit ---- */
+   -1 heading blurred out · 0 heading centred (--drop), focuses in, steps hidden · 1-6 block lifted (--lift), heading blurred out, steps set large, step n rises in, its rule draws, earlier steps dim · 7 all lit ---- */
 @media (min-width: 1000px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
   .js [data-section=process] { height: calc(100svh + 8 * var(--step)); --step: 45svh; }
   .js [data-process-stage] { position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center; }
@@ -108,7 +108,13 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   /* scenes 1+: the block rises until the steps are centred; the heading goes up with it and steps back */
   .js [data-process-stage] .in { transition: transform 900ms var(--ease-in-out); }
   .js [data-process-stage][data-scene]:not([data-scene="-1"], [data-scene="0"]) .in { transform: translateY(calc(-1 * var(--lift, 0px))); }
-  .js [data-process-stage][data-scene]:not([data-scene="-1"], [data-scene="0"]) [data-process-head] { opacity: .3; }
+  .js [data-process-stage][data-scene]:not([data-scene="-1"], [data-scene="0"]) [data-process-head] { opacity: 0; filter: blur(16px); transform: translateY(-40px); } /* drifts up and blurs out, like the team heading */
+  /* the steps have the screen to themselves: set larger than in flow (sizes, not scale: a scaled text layer shimmers) */
+  .js [data-process-stage] li .n { font-size: clamp(64px, 6.5vw, 112px); }
+  .js [data-process-stage] li .shape { max-width: 160px; }
+  .js [data-process-stage] li h3 { font-size: clamp(24px, 2.1vw, 32px); }
+  .js [data-process-stage] li .desc { font-size: 18px; }
+  .js [data-process-stage] li .who { font-size: 14px; }
   .js [data-process-stage]:is([data-scene="-1"], [data-scene="0"]) [data-process-head] { transform: translateY(var(--drop, 0px)); }
   .js [data-process-stage][data-scene="0"] [data-process-head] { transition-delay: 200ms; } /* back to 0: step 01 clears first */
   /* overrides the one-shot reveal (data-reveal-item) on the steps */

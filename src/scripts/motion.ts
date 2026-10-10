@@ -114,7 +114,7 @@ if (hero) {
 }
 
 // Process: pinned like the hero. Scroll picks the scene (-1 before the pin, then 0-7, one per --step); motion.css transitions between them.
-// -1 heading hidden in a blur · 0 heading alone, centred, focuses in · 1-6 block lifts so the steps are centred, heading dims; step n comes in, earlier steps dim · 7 all steps lit.
+// -1 heading hidden in a blur · 0 heading alone, centred, focuses in · 1-6 block lifts so the steps are centred, heading blurs out; step n comes in, earlier steps dim · 7 all steps lit.
 const proc = document.querySelector<HTMLElement>('[data-process-stage]');
 if (proc) {
   const sec = proc.parentElement!;
