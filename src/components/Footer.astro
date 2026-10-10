@@ -15,7 +15,7 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
     </div>
   </div>
   <!-- the whole mark, half-cropped by the page bottom; its arc tips stand on the row's top border.
-       Arcs as two stacked SVGs so overscrolling past the page end can lift the bottom one (motion.ts → --lift) on its own
+       Arcs as two stacked SVGs so reaching the page end can lift the bottom one (motion.ts → data-up) on its own
        compositor layer - a transform on a <g> inside one SVG repainted the whole mark (and the blend over it) every frame -->
   <div class="crop">
     <div class="end" aria-hidden="true" data-reveal="rise" data-footer-mark>
@@ -43,7 +43,7 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   .crop { overflow: hidden; }
   .end { display: grid; width: 96vw; margin: 0 auto -22vw; }
   .end > svg { grid-area: 1 / 1; display: block; width: 100%; height: auto; }
-  /* rubber band: rises up to 36 units (of 447 = 8.05% of the box) while pushed, springs back when let go */
-  .arc-bot { transform: translateY(calc(var(--lift, 0) * -8.05%)); transition: transform 700ms var(--ease-out); will-change: transform; }
-  .end[data-pulling] .arc-bot { transition-duration: 120ms; }
+  /* at the page end the bottom arc rises 36 units (of 447 = 8.05% of the box) */
+  .arc-bot { transition: transform 700ms var(--ease-out); will-change: transform; }
+  .end[data-up] .arc-bot { transform: translateY(-8.05%); }
 </style>

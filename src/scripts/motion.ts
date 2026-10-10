@@ -57,35 +57,13 @@ document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => {
 });
 root.classList.add('motion-ready');
 
-// Footer overscroll: pushing on past the page end lifts the bottom arc a little - eased so it gives less the harder you
-// push (1 - e^(-pull/400)) - and lets it settle once the push stops (160ms without wheel / touch movement).
+// Footer: reaching the page end lifts the bottom arc; scrolling back up lowers it.
 const foot = document.querySelector<HTMLElement>('[data-footer-mark]');
 if (foot && !reduce) {
-  let pull = 0;
-  let idle = 0;
-  let ty: number | null = null;
-  const atEnd = () => innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
-  const push = (d: number) => {
-    if (d <= 0 || !atEnd()) return;
-    pull += d;
-    foot.dataset.pulling = '';
-    foot.style.setProperty('--lift', (1 - Math.exp(-pull / 400)).toFixed(3));
-    clearTimeout(idle);
-    idle = setTimeout(() => {
-      pull = 0;
-      delete foot.dataset.pulling;
-      foot.style.setProperty('--lift', '0');
-    }, 160);
-  };
-  addEventListener('wheel', (e) => push(e.deltaY), { passive: true });
-  addEventListener('touchstart', (e) => { ty = e.touches[0].clientY; }, { passive: true });
-  addEventListener('touchmove', (e) => {
-    if (ty === null) return;
-    const y = e.touches[0].clientY;
-    push(ty - y); // finger moving up = pushing the page on down
-    ty = y;
-  }, { passive: true });
-  addEventListener('touchend', () => { ty = null; }, { passive: true });
+  const update = () => foot.toggleAttribute('data-up', innerHeight + scrollY >= document.documentElement.scrollHeight - 2);
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update, { passive: true });
+  update();
 }
 
 // Hero: the first `intro` px of the pin scrub the lockup 1:1 - the wordmark pulls the symbol up to the vertical centre (d1),
