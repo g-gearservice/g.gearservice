@@ -130,7 +130,8 @@ if (proc) {
   const scene = () => {
     const step = (sec.offsetHeight - innerHeight) / 8;
     const top = sec.getBoundingClientRect().top;
-    const n = top > 0 ? -1 : Math.min(Math.floor(-top / step), 7); // -1 until the stage pins
+    // -1 until half a screen before the pin: the heading starts focusing in while the stage is still arriving (0.5 = the knob)
+    const n = top > innerHeight * 0.5 ? -1 : Math.min(Math.max(Math.floor(-top / step), 0), 7);
     if (proc.dataset.scene === String(n)) return;
     proc.dataset.scene = String(n);
     items.forEach((li, i) => { li.dataset.state = n === 7 || i + 1 === n ? 'now' : i + 1 < n ? 'past' : 'next'; });
