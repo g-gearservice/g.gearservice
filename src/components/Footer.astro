@@ -44,6 +44,6 @@ const wordmarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='103 227 87
   .end { display: grid; width: 96vw; margin: 0 auto -22vw; }
   .end > svg { grid-area: 1 / 1; display: block; width: 100%; height: auto; }
   /* at the page end the bottom arc rises 36 units (of 447 = 8.05% of the box) */
-  .arc-bot { transition: transform 700ms var(--ease-out); will-change: transform; }
+  .arc-bot { transition: transform 350ms var(--ease-out); will-change: transform; }
   .end[data-up] .arc-bot { transform: translateY(-8.05%); }
 </style>
