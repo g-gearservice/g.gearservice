@@ -82,23 +82,22 @@ const glyphSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22' fi
   header:not(.ghost) .home :global(svg) { opacity: 0; }
   :global(.nav-up:has(header:focus-within)) .ghost { translate: none; } /* follow the real header back when focused */
   /* --rev: the reverse colour the ghost paints with (white by default, difference-blended) */
-  .ghost { --rev: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 11; pointer-events: none; mix-blend-mode: difference; }
+  .ghost { --rev: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 9; pointer-events: none; mix-blend-mode: difference; } /* 9: under the real header (10), whose cta label then sits on top, un-reversed */
   .ghost .home, .ghost nav a:not(.cta) { --fg: var(--rev); color: var(--rev); }
   /* red-black: the ghost paints through .thr / .thr-img (global.css) instead of a blend. The cta pill is the same
-     threshold (black on the red, white over black; the border-radius clips it), its label stays red on top */
+     threshold (black on the red, white over black; the border-radius clips it) */
   :global([data-colorway=red-black]) .ghost { --rev: #000; mix-blend-mode: normal; }
-  :global([data-colorway=red-black]) .ghost nav a.cta { background: var(--accent); color: var(--on-accent); }
+  :global([data-colorway=red-black]) .ghost nav a.cta { background: var(--accent); }
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
     :global([data-colorway=red-black]) .ghost nav a.cta { background: transparent; -webkit-backdrop-filter: var(--thr); backdrop-filter: var(--thr); }
   }
   /* red-white: no difference blend can turn red ground white (white - red = cyan), so it paints plain white */
   :global([data-colorway=red-mist]) .ghost { --rev: var(--fg); mix-blend-mode: normal; }
   nav a.cta { margin-left: 8px; padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
-  /* cta, inverted too: white pill = inverse of what's behind; #000 label = the backdrop showing through.
-     The real pill stays clickable but clear; its hover/press feedback is mirrored onto the ghost. */
-  header:not(.ghost) nav a.cta { background: transparent; color: transparent; }
-  .ghost nav a.cta { background: var(--rev); color: #000; }
-  :global([data-colorway=red-mist]) .ghost nav a.cta { color: var(--on-accent); } /* not blended: red label on the white pill */
+  /* cta: only the pill is inverted (white = inverse of what's behind); the label is the real one, plain --on-accent,
+     above the ghost. The real pill stays clickable but clear; its hover feedback is mirrored onto the ghost. */
+  header:not(.ghost) nav a.cta { background: transparent; }
+  .ghost nav a.cta { background: var(--rev); color: transparent; }
   header:has(.cta:hover) ~ .ghost .cta { opacity: .85; }
   header:has(.cta:active) ~ .ghost .cta { transform: scale(.97); }
   /* 375px: glyph + 4 links must stay on one row (full-size paddings total ~334px of 335px) */
