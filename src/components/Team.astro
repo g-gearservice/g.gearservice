@@ -60,7 +60,9 @@ const teams = [
       const top = screen.getBoundingClientRect().top;
       const r = root.getBoundingClientRect();
       d1 = Math.max(r.top - top - Math.max((innerHeight - r.height) / 2, 0), 0); // explorer top → centred (or flush top if taller)
-      d2 = Math.max(head.getBoundingClientRect().bottom - top - d1, 1); // lifted: heading bottom → screen top
+      // lifted: heading bottom → screen top, but at least its own height - on a short screen that gap shrinks to nothing
+      // and the heading blinked out in a pixel of scroll instead of rising off
+      d2 = Math.max(head.getBoundingClientRect().bottom - top - d1, head.offsetHeight);
       pin.style.setProperty('--intro', `${d1 + d2}px`);
     };
     const scene = () => {
