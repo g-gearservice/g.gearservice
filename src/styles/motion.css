@@ -91,6 +91,27 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   .js [data-hero-stage] [data-copy] { transform: none; }
 }
 
+/* ---- Process: pinned, scenes picked by scroll (motion.ts sets [data-scene] on the stage, [data-state] on each step).
+   Wide screens with motion only; elsewhere the steps keep the one-shot reveal below.
+   0 heading centred (--drop), steps hidden · 1-6 step n rises in, its rule draws, earlier steps dim · 7 all lit ---- */
+@media (min-width: 1000px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .js [data-section=process] { height: calc(100svh + 8 * var(--step)); --step: 45svh; }
+  .js [data-process-stage] { position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center; }
+  .js [data-process-stage] .in { padding-block: 0; }
+  .js [data-process-stage] [data-process-steps] { grid-template-columns: repeat(6, 1fr); }
+  .js [data-process-stage] [data-process-head] { transition: transform 900ms var(--ease-in-out); }
+  .js [data-process-stage][data-scene="0"] [data-process-head] { transform: translateY(var(--drop, 0px)); }
+  /* overrides the one-shot reveal (data-reveal-item) on the steps */
+  .js [data-process-stage][data-scene] li[data-reveal-item] {
+    opacity: 1; transform: none;
+    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+  }
+  .js [data-process-stage][data-scene] li[data-reveal-item][data-state=next] { opacity: 0; transform: translateY(24px); transition-duration: 300ms; }
+  .js [data-process-stage][data-scene] li[data-reveal-item][data-state=past] { opacity: .32; }
+  .js [data-process-stage][data-scene] li[data-reveal-item] .rule { transform: none; transition: transform 700ms var(--ease-out) 150ms; }
+  .js [data-process-stage][data-scene] li[data-reveal-item][data-state=next] .rule { transform: scaleX(0); transition-delay: 0s; }
+}
+
 /* ---- Scroll reveal (one-shot; motion.ts adds .is-in) ---- */
 .js [data-reveal]:not([data-reveal=part], [data-reveal=rise], [data-reveal=letters]), .js [data-reveal-item] {
   opacity: 0; transform: translateY(var(--reveal-y));

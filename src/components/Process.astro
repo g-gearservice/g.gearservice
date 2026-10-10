@@ -5,13 +5,14 @@ import Eyebrow from './Eyebrow.astro';
 import { process } from '../data/content';
 ---
 <section id="process" data-section="process" class="process">
+  <div class="stage" data-process-stage>
   <div class="wrap in">
-    <div class="head">
+    <div class="head" data-process-head>
       <Eyebrow>{process.eyebrow}</Eyebrow>
       <h2 class="h2" data-reveal="display">{process.title[0]}<br />{process.title[1]}</h2>
       <p class="lede" data-reveal>{process.body}</p>
     </div>
-    <ol class="steps" role="list">
+    <ol class="steps" role="list" data-process-steps>
       {process.steps.map((s) => (
         <li data-step={s.n} data-part={s.part} data-reveal-item>
           <span class="n" aria-hidden="true">{s.n}</span>
@@ -27,10 +28,11 @@ import { process } from '../data/content';
       ))}
     </ol>
   </div>
+  </div>
 </section>
 <style>
   .process { border-block: 1px solid var(--line); }
-  .in { padding-block: clamp(72px, 8vw, 112px); display: flex; flex-direction: column; gap: clamp(40px, 5vw, 72px); }
+  .in { padding-block: clamp(120px, 14vw, 200px); display: flex; flex-direction: column; gap: clamp(40px, 5vw, 72px); }
   .head { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
   .lede { max-width: 560px; }
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 48px 0; }

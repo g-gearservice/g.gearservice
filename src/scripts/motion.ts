@@ -112,3 +112,26 @@ if (hero) {
   measure();
   scene();
 }
+
+// Process: pinned like the hero. Scroll picks the scene (0-7, one per --step); motion.css transitions between them.
+// 0 heading alone, centred · 1-6 step n comes in, earlier steps dim · 7 all steps lit.
+const proc = document.querySelector<HTMLElement>('[data-process-stage]');
+if (proc) {
+  const sec = proc.parentElement!;
+  const head = proc.querySelector<HTMLElement>('[data-process-head]')!;
+  const list = proc.querySelector<HTMLElement>('[data-process-steps]')!;
+  const items = [...list.children] as HTMLElement[];
+  // scene 0 centres the heading: drop it by half the space the steps take below it (offsets ignore transforms)
+  const measure = () => proc.style.setProperty('--drop', `${(list.offsetTop + list.offsetHeight - head.offsetTop - head.offsetHeight) / 2}px`);
+  const scene = () => {
+    const step = (sec.offsetHeight - innerHeight) / 8;
+    const n = Math.min(Math.max(Math.floor(-sec.getBoundingClientRect().top / step), 0), 7);
+    if (proc.dataset.scene === String(n)) return;
+    proc.dataset.scene = String(n);
+    items.forEach((li, i) => { li.dataset.state = n === 7 || i + 1 === n ? 'now' : i + 1 < n ? 'past' : 'next'; });
+  };
+  addEventListener('scroll', scene, { passive: true });
+  addEventListener('resize', () => { measure(); scene(); });
+  measure();
+  scene();
+}
