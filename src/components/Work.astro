@@ -44,23 +44,26 @@ import { work } from '../data/content';
 </section>
 <script>
   // the live button opens the embed under its row: the grid row grows (pushing the rows below, and their border, down)
-  // while the frame rises into place. The site loads only on play; pause (or closing the row) unloads it.
+  // while the frame rises into place. The site loads on first open and waits behind a blur; play lifts the blur and
+  // hands it the pointer, pause (or closing the row) puts it back under.
   document.querySelectorAll<HTMLElement>('[data-embed]').forEach((li) => {
     const btn = li.querySelector<HTMLButtonElement>('[data-live]');
     const box = li.querySelector<HTMLElement>('.embed');
     const frame = li.querySelector<HTMLIFrameElement>('iframe');
     const screen = li.querySelector<HTMLElement>('.embed__screen');
     if (!btn || !box || !frame || !screen) return;
-    const play = (on: boolean) => {
-      frame.src = on ? frame.dataset.src! : 'about:blank';
+    frame.inert = true;
+    const play = (on: boolean, focus = true) => {
+      frame.inert = !on;
       screen.classList.toggle('is-playing', on);
-      li.querySelector<HTMLButtonElement>(on ? '[data-pause]' : '[data-play]')!.focus({ preventScroll: true });
+      if (focus) li.querySelector<HTMLButtonElement>(on ? '[data-pause]' : '[data-play]')!.focus({ preventScroll: true });
     };
     li.querySelector('[data-play]')!.addEventListener('click', () => play(true));
     li.querySelector('[data-pause]')!.addEventListener('click', () => play(false));
     btn.addEventListener('click', () => {
       const open = btn.getAttribute('aria-expanded') !== 'true';
-      if (!open && screen.classList.contains('is-playing')) { frame.src = 'about:blank'; screen.classList.remove('is-playing'); }
+      if (open && !frame.src) frame.src = frame.dataset.src!;
+      if (!open) play(false, false);
       btn.setAttribute('aria-expanded', String(open));
       box.inert = !open;
       li.classList.toggle('is-open', open);
@@ -88,7 +91,10 @@ import { work } from '../data/content';
   .embed__frame { display: flex; flex-direction: column; gap: 10px; padding-top: clamp(8px, 1.5vw, 20px); opacity: 0; transform: translateY(48px); transition: opacity 400ms var(--ease-out), transform 600ms var(--ease-out); }
   .is-open .embed__frame { opacity: 1; transform: none; transition-delay: 80ms; }
   iframe { display: block; width: 100%; height: clamp(420px, 70svh, 760px); border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
-  .embed__screen { position: relative; }
+  .embed__screen { position: relative; overflow: hidden; border-radius: 20px; }
+  /* idle: the loaded site sits blurred under the play button (scaled so the blur's soft edge stays outside the clip) */
+  .embed__screen iframe { transition: filter 400ms var(--ease-out), scale 400ms var(--ease-out); }
+  .embed__screen:not(.is-playing) iframe { filter: blur(14px); scale: 1.06; pointer-events: none; }
   /* play / pause: the live pill, bigger; play sits centred on the idle panel, pause in the corner while it runs */
   .ctl { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-family: var(--font-label); font-size: 17px; font-weight: 500; cursor: pointer; transition: opacity 150ms ease, transform 160ms var(--ease-out); }
   .ctl:hover { opacity: .85; }
