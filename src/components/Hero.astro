@@ -1,6 +1,7 @@
 ---
 // Pinned hero, played as scenes (motion.ts sets data-scene from scroll; motion.css transitions between them):
-//   0 lockup · 1 arcs part, statement in the lens · 2 arcs rejoin, "the mark is the team." · 3/4/5 top arc, lens, bottom arc lit
+//   0 lockup · 1 arcs part, statement in the lens · 2 the statement's body takes its place · 3 arcs rejoin, "the mark is the team."
+//   4/5/6 top arc, lens, bottom arc lit
 // The two halves (wordmark + top arc / bottom arc) carry --a / --p; the split Mark on top holds the per-part highlights.
 import textSvg from '../../SVG/black-text.svg?raw';
 // wordmark: SVG/black-text.svg verbatim, scaled to sit on the symbol: the g descender touches the top arc (y 368.96)
@@ -22,15 +23,15 @@ import { statement, anatomy } from '../data/content';
           <g class="mk" data-mark-lit style="stroke:var(--mark)"><use href="#mark-bot" /></g>
         </svg>
         <Mark lit="none" split viewBox="103 227 875 589" class="half parts" />
-        <div class="half half--bot arch-copy"><p data-lens-line>{statement.body}</p></div>
         <h2 class="lens-line" data-lens-line>{statement.title[0]}<br />{statement.title[1]}</h2>
-        <div class="copy" data-copy="2">
+        <p class="lens-body" data-copy="2">{statement.body}</p>
+        <div class="copy" data-copy="3">
           <p class="k">{anatomy.eyebrow}</p>
           <h2 class="n">{anatomy.title}</h2>
           <p class="b">{anatomy.body}</p>
         </div>
         {anatomy.labels.map((l, i) => (
-          <div class="copy" data-copy={i + 3}><p class="k">{l.kicker}</p><h3 class="n">{l.name}</h3></div>
+          <div class="copy" data-copy={i + 4}><p class="k">{l.kicker}</p><h3 class="n">{l.name}</h3></div>
         ))}
       </div>
     </div>
@@ -50,11 +51,13 @@ import { statement, anatomy } from '../data/content';
     font-family: var(--font-display); font-size: 10cqw; line-height: 0.95; letter-spacing: -0.045em; font-weight: 500;
     text-align: center; white-space: nowrap;
   }
-  /* body copy rides the bottom arc, inside its dome: y 600-800 of the lockup, where the dome is ~630 units wide */
-  .arch-copy p {
-    position: absolute; left: 50%; top: 81%; translate: -50% -50%; width: 62%; margin: 0;
-    text-align: center; text-wrap: balance; font-size: max(2.1cqw, 12px); line-height: 1.6; color: var(--soft);
+  /* the statement's body: next scene, in the headline's place (the parted arcs leave the middle open) */
+  .lens-body {
+    position: absolute; left: 50%; top: 61.9%; translate: -50% -50%; width: 56%; margin: 0;
+    text-align: center; text-wrap: balance; font-size: max(2.6cqw, 14px); line-height: 1.5; letter-spacing: -0.01em;
   }
+  /* no JS: no scenes, so it sits under the headline inside the parted bottom arc's dome (y 81% of the box, moved down 50%) */
+  :global(html:not(.js)) .lens-body { top: 131%; width: 62%; font-size: max(2.1cqw, 12px); color: var(--soft); }
   /* anatomy captions: inside the closed lens (x 250-830, y 442-741), one per scene */
   .copy {
     position: absolute; left: 50%; top: 61.9%; translate: -50% -50%; width: 44%;

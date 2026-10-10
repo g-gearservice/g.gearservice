@@ -51,15 +51,22 @@ const io = new IntersectionObserver(
 document.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => io.observe(el));
 root.classList.add('motion-ready');
 
-// Hero scenes: scroll only picks the scene (0-5, one per --step of the pin); motion.css transitions between them.
+// Hero scenes: scroll only picks the scene (0-6, one per --step of the pin); motion.css transitions between them.
 const hero = document.querySelector<HTMLElement>('[data-hero-stage]');
 if (hero) {
   const sec = hero.parentElement!;
+  const logo = hero.querySelector<HTMLElement>('[data-hero-logo]')!;
   const scene = () => {
     const q = -sec.getBoundingClientRect().top / (sec.offsetHeight - innerHeight); // 0 → 1 over the pin
-    hero.dataset.scene = String(Math.min(Math.max(Math.round(q * 5), 0), 5));
+    hero.dataset.scene = String(Math.min(Math.max(Math.round(q * 6), 0), 6));
+  };
+  // focus zoom: symbol = 447 of the logo's 875 units tall; landscape fills the height, portrait the width
+  const zoom = () => {
+    const z = innerWidth > innerHeight ? innerHeight / (logo.offsetWidth * 447 / 875) : innerWidth / logo.offsetWidth;
+    hero.style.setProperty('--zoom', String(Math.max(z, 1)));
   };
   addEventListener('scroll', scene, { passive: true });
-  addEventListener('resize', scene);
+  addEventListener('resize', () => { zoom(); scene(); });
+  zoom();
   scene();
 }
