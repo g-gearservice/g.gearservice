@@ -50,8 +50,10 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
 .js [data-hero-stage] {
   position: sticky; top: 0; height: 100svh; padding-top: 72px; display: grid; align-content: center;
   --p: 0;
-  /* logo width: as wide as the nav's content edges, capped so the symbol alone (447 of the 589 lockup units) still fits the screen */
-  --lw: min(min(100vw, var(--max)) - 2 * var(--gutter), (100svh - 72px - 2 * var(--gutter)) * 875 / 447);
+  /* logo width: as wide as the nav's content edges, capped so the symbol alone (447 of the 589 lockup units) still fits the screen.
+     100cqw (this stage), not 100vw: vw counts a classic scrollbar, and the extra width pushed the logo right of centre */
+  container-type: inline-size;
+  --lw: min(min(100cqw, var(--max)) - 2 * var(--gutter), (100svh - 72px - 2 * var(--gutter)) * 875 / 447);
 }
 .js [data-hero-stage] > .wrap { width: 100%; } /* auto margins would shrink it to the logo, which (container-type) has no content width */
 /* the captions' twin box: where the logo's centre lands once lifted (--a: 1), sizes times the zoom (Hero.astro) */
