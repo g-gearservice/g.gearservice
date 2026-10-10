@@ -100,7 +100,7 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   .js [data-process-stage] .in { padding-block: 0; }
   .js [data-process-stage] [data-process-steps] { grid-template-columns: repeat(6, 1fr); }
   .js [data-process-stage] [data-process-head] { transition: transform 900ms var(--ease-in-out); }
-  .js [data-process-stage][data-scene="0"] [data-process-head] { transform: translateY(var(--drop, 0px)); }
+  .js [data-process-stage][data-scene="0"] [data-process-head] { transform: translateY(var(--drop, 0px)); transition-delay: 200ms; } /* back to 0: step 01 clears first */
   /* overrides the one-shot reveal (data-reveal-item) on the steps */
   .js [data-process-stage][data-scene] li[data-reveal-item] {
     opacity: 1; transform: none;
@@ -108,6 +108,9 @@ html.lenis { scroll-behavior: auto; } /* Lenis animates scrollTop itself; native
   }
   .js [data-process-stage][data-scene] li[data-reveal-item][data-state=next] { opacity: 0; transform: translateY(24px); transition-duration: 300ms; }
   .js [data-process-stage][data-scene] li[data-reveal-item][data-state=past] { opacity: .32; }
+  /* scene 1: the heading moves up first, then step 01 comes in under it */
+  .js [data-process-stage][data-scene="1"] li[data-reveal-item][data-state=now] { transition-delay: 550ms; }
+  .js [data-process-stage][data-scene="1"] li[data-reveal-item][data-state=now] .rule { transition-delay: 700ms; }
   .js [data-process-stage][data-scene] li[data-reveal-item] .rule { transform: none; transition: transform 700ms var(--ease-out) 150ms; }
   .js [data-process-stage][data-scene] li[data-reveal-item][data-state=next] .rule { transform: scaleX(0); transition-delay: 0s; }
 }
