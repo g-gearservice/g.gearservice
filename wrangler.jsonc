@@ -3,5 +3,5 @@
   "name": "gdotgear",
   "compatibility_date": "2026-10-08",
   "assets": { "directory": "./dist" },
-  "routes": [{ "pattern": "gdotgear.services/*", "zone_name": "gdotgear.services" }]
+  "routes": [{ "pattern": "gdotgear.services", "custom_domain": true }]
 }
